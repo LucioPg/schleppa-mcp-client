@@ -1,14 +1,3 @@
-Metadata-Version: 2.1
-Name: python-mcp-client
-Version: 0.1.2
-Description-Content-Type: text/markdown
-Requires-Dist: mcp>=0.0.1
-Requires-Dist: langchain>=0.1.0
-Requires-Dist: langchain-openai>=0.0.1
-Requires-Dist: langchain-mcp-adapters>=0.0.1
-Requires-Dist: langgraph>=0.0.1
-Requires-Dist: flask>=2.0.0
-
 # Python MCP Client: LLM-Powered Tool Orchestration Framework
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
