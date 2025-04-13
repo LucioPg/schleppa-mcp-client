@@ -1,0 +1,11 @@
+version: '3'
+services:
+  mcp-app:
+    build: .
+    ports:
+      - "5008:5008"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./templates:/app/templates
+    restart: unless-stopped 

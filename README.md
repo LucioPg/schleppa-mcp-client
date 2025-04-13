@@ -1,11 +1,11 @@
-# Python MCP Client: LLM-Powered Tool Orchestration Framework
+# Python Client for MCP Servers (Web Based Platform)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![LangChain](https://img.shields.io/badge/LangChain-Enabled-green.svg)](https://github.com/hwchase17/langchain)
 [![LLM Tools](https://img.shields.io/badge/LLM-Tools-orange.svg)](https://github.com/kernelmax/python-mcp-client)
 [![Open Source](https://img.shields.io/badge/Open-Source-brightgreen.svg)](https://github.com/kernelmax/python-mcp-client)
 
-A 100% open source Python framework for building, deploying, and orchestrating LLM-powered tools with Model Context Protocol (MCP). Create intelligent agents that can interact with databases, file systems, and web services through natural language processing. Free to use, modify, and distribute under the MIT license.
+A web-based Python platform for connecting to multiple MCP servers, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
 
 ![MCP Client Interface - LLM-powered tool orchestration dashboard](./static/Screenshot%20from%202025-04-13%2006-50-45.png)
 
@@ -71,6 +71,55 @@ If you want the latest development version or plan to contribute:
 
 2. Open your browser and navigate to `http://localhost:5008`
 
+#### Option 3: Run with Docker
+
+You can also run Python MCP Client using Docker:
+
+1. Pull the pre-built image from Docker Hub:
+   ```bash
+   docker pull kernelmax/python-mcp-client
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 5008:5008 -e OPENAI_API_KEY=your-api-key-here kernelmax/python-mcp-client
+   ```
+
+3. Open your browser and navigate to `http://localhost:5008`
+
+#### Option 4: Run with Docker Compose
+
+For a more convenient setup, you can use Docker Compose:
+
+1. Create a `docker-compose.yml` file or use the one provided in the repository:
+   ```yaml
+   version: '3'
+   services:
+     mcp-app:
+       image: kernelmax/python-mcp-client
+       # or build from source:
+       # build: .
+       ports:
+         - "5008:5008"
+       environment:
+         - OPENAI_API_KEY=${OPENAI_API_KEY}
+       volumes:
+         - ./templates:/app/templates
+       restart: unless-stopped
+   ```
+
+2. Set your OpenAI API key in your environment:
+   ```bash
+   export OPENAI_API_KEY=your-api-key-here
+   ```
+
+3. Start the service:
+   ```bash
+   docker-compose up
+   ```
+
+4. Open your browser and navigate to `http://localhost:5008`
+
 ## 💡 Natural Language AI Tool Examples
 
 ### Database Management with Natural Language
@@ -133,7 +182,7 @@ An intelligent file system assistant with tools for:
 - [ ] **User Authentication**: Secure access control with role-based permissions
 - [ ] **Database Engine Expansion**: Support for PostgreSQL, MongoDB, and other databases
 - [ ] **Real-time Communication**: WebSocket integration for live updates and responses
-- [ ] **Containerized Deployment**: Docker compose setup for one-click deployment
+- [x] **Containerized Deployment**: Docker compose setup for one-click deployment
 - [ ] **Comprehensive Testing**: Extensive test suite for reliability and stability
 - [ ] **Session Persistence**: Save and resume conversations with your AI tools
 

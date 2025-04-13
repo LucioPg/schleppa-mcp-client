@@ -1468,7 +1468,7 @@
             </button>
         </div>
         <div class="theme-options">
-            <div class="theme-option active" data-theme="default">
+            <div class="theme-option" data-theme="default">
                 <div class="theme-preview">
                     <div class="theme-preview-header" style="background-color: #02343F;"></div>
                     <div class="theme-preview-sidebar" style="background-color: #02343F;"></div>
@@ -1486,7 +1486,7 @@
                 <div class="theme-name">Dark</div>
                 <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
             </div>
-            <div class="theme-option" data-theme="night">
+            <div class="theme-option active" data-theme="night">
                 <div class="theme-preview">
                     <div class="theme-preview-header" style="background-color: #000000;"></div>
                     <div class="theme-preview-sidebar" style="background-color: #000000;"></div>
@@ -2330,7 +2330,7 @@
         
         // Load saved theme or default
         function loadSavedTheme() {
-            const savedTheme = localStorage.getItem('preferredTheme') || 'default';
+            const savedTheme = localStorage.getItem('preferredTheme') || 'night';
             applyTheme(savedTheme);
         }
         

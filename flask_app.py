@@ -20,11 +20,11 @@ servers = {
         "args": [os.path.join(current_dir, "mysql_mcp_server.py")],
         "transport": "stdio",
     },
-    # "file": {
-    #     "command": "python",
-    #     "args": [os.path.join(current_dir, "file_mcp_server.py")],
-    #     "transport": "stdio",
-    # }
+    "file": {
+        "command": "python",
+        "args": [os.path.join(current_dir, "file_mcp_server.py")],
+        "transport": "stdio",
+    }
 }
 
 # Set a default API key or use environment variable
@@ -249,4 +249,4 @@ def calculate():
 if __name__ == '__main__':
     # Create templates directory if it doesn't exist
     os.makedirs(os.path.join(current_dir, 'templates'), exist_ok=True)
-    app.run(debug=True, port=5008) 
+    app.run(debug=True, host='0.0.0.0', port=5008) 
