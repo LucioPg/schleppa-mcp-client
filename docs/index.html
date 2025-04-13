@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Metadata -->
+    <title>Python MCP Client | Local Tool for MCP Server Integration</title>
+    <meta name="description" content="An open source Python client for connecting to and using multiple ready-made Model Context Protocol (MCP) servers. Interface with various AI tools through a single unified application.">
+    <meta name="keywords" content="MCP, Model Context Protocol, MCP Client, LangChain, LangGraph, Python, MCP Server, MCP Integration, Natural Language Processing">
+    <meta name="author" content="Python MCP Client Team">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Python MCP Client | Local Tool for MCP Server Integration">
+    <meta property="og:description" content="Connect to and use multiple ready-made MCP servers through a single unified interface">
+    <meta property="og:image" content="https://github.com/kernelmax/python-mcp-client/raw/main/static/Screenshot%20from%202025-04-13%2006-50-45.png">
+    <meta property="og:url" content="https://kernelmax.github.io/python-mcp-client">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    
+    <!-- CSS -->
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a0a0a0;
+            --accent-primary: #7c4dff;
+            --accent-secondary: #4caf50;
+            --code-bg: #2d2d2d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        header {
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo span {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+        
+        .github-button {
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .github-button:hover {
+            background-color: #6a40e0;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 1rem 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(124, 77, 255, 0.3), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(76, 175, 80, 0.2), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+            z-index: -1;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.2;
+            filter: blur(8px);
+        }
+        
+        .shape-1 {
+            top: 15%;
+            left: 10%;
+            width: 200px;
+            height: 200px;
+            background: var(--accent-primary);
+            border-radius: 35% 65% 31% 69% / 57% 59% 41% 43%;
+            animation: float 20s linear infinite;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--accent-secondary);
+            border-radius: 46% 54% 42% 58% / 30% 43% 57% 70%;
+            animation: float 25s linear infinite reverse;
+        }
+        
+        .shape-3 {
+            top: 60%;
+            left: 5%;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+            animation: float 18s linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(10px, -10px) rotate(3deg);
+            }
+            50% {
+                transform: translate(0, -20px) rotate(0deg);
+            }
+            75% {
+                transform: translate(-10px, -10px) rotate(-3deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (max-width: 992px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .image-container {
+                order: -1;
+            }
+            
+            .badge-container {
+                justify-content: center;
+            }
+            
+            .cta-buttons {
+                justify-content: center;
+            }
+        }
+        
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            background: linear-gradient(90deg, #ffffff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .highlight {
+            color: var(--text-primary);
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .badge:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+        
+        .primary-button {
+            background: linear-gradient(135deg, var(--accent-primary), #6a40e0);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+        }
+        
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 77, 255, 0.6);
+            background: linear-gradient(135deg, #8c63ff, #7c4dff);
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .secondary-button:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background-color: rgba(124, 77, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .image-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-image {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transform: perspective(1000px) rotateY(-5deg);
+            transition: all 0.5s ease;
+        }
+        
+        .hero-image:hover {
+            transform: perspective(1000px) rotateY(0deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+        
+        .image-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(124, 77, 255, 0.3), transparent 70%);
+            filter: blur(20px);
+            z-index: -1;
+        }
+        
+        .features {
+            background-color: var(--bg-secondary);
+            padding: 6rem 1rem;
+        }
+        
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .section-title p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-primary);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+        
+        .code-example {
+            margin-top: 6rem;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-tab {
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .code-tab.active {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+        
+        pre {
+            margin: 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        code {
+            color: #e0e0e0;
+        }
+        
+        .comment {
+            color: #6a9955;
+        }
+        
+        .string {
+            color: #ce9178;
+        }
+        
+        .keyword {
+            color: #569cd6;
+        }
+        
+        .function {
+            color: #dcdcaa;
+        }
+        
+        footer {
+            background-color: var(--bg-primary);
+            padding: 4rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 6rem;
+            }
+            
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .footer-container {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+        
+        .copyright {
+            color: var(--text-secondary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .social-link:hover {
+            color: var(--accent-primary);
+        }
+        
+        .server-status {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .server-status {
+                flex-direction: column;
+            }
+        }
+        
+        .status-column {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .status-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        
+        .server-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .server-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .server-item.available {
+            background-color: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .server-item.planned {
+            background-color: rgba(124, 77, 255, 0.1);
+            border: 1px solid rgba(124, 77, 255, 0.3);
+        }
+        
+        .server-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .server-icon {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .server-info h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+        
+        .server-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div>🤖</div>
+                <span>Python MCP Client</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#examples">Examples</a>
+                <a href="https://github.com/kernelmax/python-mcp-client#getting-started-with-python-mcp">Documentation</a>
+            </div>
+            <a href="https://github.com/kernelmax/python-mcp-client" class="github-button" target="_blank">
+                <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                GitHub
+            </a>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Local Client for MCP Servers</h1>
+                <p>A Python tool for connecting to and using <span class="highlight">multiple ready-made MCP servers</span>. Interact with various AI tools through a single unified interface.</p>
+                
+                <div class="badge-container">
+                    <div class="badge">Python 3.8+</div>
+                    <div class="badge">LangChain</div>
+                    <div class="badge">LangGraph</div>
+                    <div class="badge">MCP Servers</div>
+                    <div class="badge">Open Source</div>
+                    <div class="badge">Client Tool</div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <a href="https://github.com/kernelmax/python-mcp-client" class="primary-button" target="_blank">Get Started</a>
+                    <a href="https://github.com/kernelmax/python-mcp-client#natural-language-ai-tool-examples" class="secondary-button" target="_blank">View Examples</a>
+                </div>
+            </div>
+            
+            <div class="image-container">
+                <div class="image-glow"></div>
+                <img src="https://github.com/kernelmax/python-mcp-client/raw/main/static/Screenshot%20from%202025-04-13%2006-50-45.png" alt="Python MCP Client Interface - Connect to multiple MCP servers" class="hero-image">
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Python MCP Client simplifies working with multiple MCP servers</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Multi-Server Integration</h3>
+                    <p>Connect to multiple MCP servers simultaneously through a single client application.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Web Interface</h3>
+                    <p>Access and manage your connected MCP servers through an intuitive, user-friendly dashboard.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>LangChain Integration</h3>
+                    <p>Utilize LangChain and LangGraph to process queries and route them to appropriate MCP tools.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Ready-Made Server Support</h3>
+                    <p>Use pre-built MCP servers for common tasks like database operations and file management.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Dynamic Server Management</h3>
+                    <p>Add, remove, and configure MCP servers at runtime without restarting the client.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Natural Language Queries</h3>
+                    <p>Send natural language requests that are routed to the appropriate MCP server tools.</p>
+                </div>
+            </div>
+            
+            <div class="server-integrations" id="integrations">
+                <div class="section-title" style="margin-top: 6rem;">
+                    <h2>MCP Server Ecosystem</h2>
+                    <p>Connect to a growing collection of MCP servers to extend your capabilities</p>
+                </div>
+                
+                <div class="server-status">
+                    <div class="status-column">
+                        <h3>Currently Available</h3>
+                        <ul class="server-list">
+                            <li class="server-item available">
+                                <span class="server-icon">🗄️</span>
+                                <div class="server-info">
+                                    <h4>MySQL MCP Server</h4>
+                                    <p>Execute SQL queries and manage databases through natural language</p>
+                                </div>
+                            </li>
+                            <li class="server-item available">
+                                <span class="server-icon">📁</span>
+                                <div class="server-info">
+                                    <h4>File System MCP Server</h4>
+                                    <p>Read, write, and manage files using conversational commands</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="status-column">
+                        <h3>Coming Soon</h3>
+                        <ul class="server-list">
+                            <li class="server-item planned">
+                                <span class="server-icon">🔍</span>
+                                <div class="server-info">
+                                    <h4>Google Workspace</h4>
+                                    <p>Gmail, Docs, Drive, Calendar</p>
+                                </div>
+                            </li>
+                            <li class="server-item planned">
+                                <span class="server-icon">👥</span>
+                                <div class="server-info">
+                                    <h4>Microsoft 365</h4>
+                                    <p>Outlook, OneDrive, Teams</p>
+                                </div>
+                            </li>
+                            <li class="server-item planned">
+                                <span class="server-icon">💬</span>
+                                <div class="server-info">
+                                    <h4>Slack</h4>
+                                    <p>Messages, channels, workflows</p>
+                                </div>
+                            </li>
+                            <li class="server-item planned">
+                                <span class="server-icon">💼</span>
+                                <div class="server-info">
+                                    <h4>Salesforce</h4>
+                                    <p>CRM data, leads, accounts</p>
+                                </div>
+                            </li>
+                            <li class="server-item planned">
+                                <span class="server-icon">📊</span>
+                                <div class="server-info">
+                                    <h4>Jira</h4>
+                                    <p>Issues, projects, reports</p>
+                                </div>
+                            </li>
+                            <li class="server-item planned">
+                                <span class="server-icon">📋</span>
+                                <div class="server-info">
+                                    <h4>Zoho</h4>
+                                    <p>CRM, Books, Projects</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="code-example" id="examples">
+                <div class="code-tabs">
+                    <div class="code-tab active">Natural Language Example</div>
+                </div>
+                
+                <pre><code><span class="comment"># Example natural language query to MySQL MCP server</span>
+<span class="string">"Show me all users in the database that registered in the last month"</span>
+
+<span class="comment"># How the MCP Client processes your request</span>
+<span class="comment"># 1. The client routes your query to the appropriate MCP server</span>
+<span class="comment"># 2. The MySQL MCP server handles the query</span>
+<span class="comment"># 3. It executes SQL on your behalf:</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> registration_date >= <span class="function">DATE_SUB</span>(<span class="function">NOW</span>(), <span class="keyword">INTERVAL</span> 1 <span class="keyword">MONTH</span>)
+<span class="comment"># 4. Results are returned to the client interface</span></code></pre>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-container">
+            <div class="copyright">
+                &copy; 2025 Python MCP Client | Released under the MIT License
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/kernelmax/python-mcp-client" class="social-link" target="_blank">GitHub</a>
+                <a href="https://github.com/kernelmax/python-mcp-client/issues" class="social-link" target="_blank">Support</a>
+                <a href="https://github.com/kernelmax/python-mcp-client#how-to-contribute" class="social-link" target="_blank">Contribute</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Python MCP Client",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "softwareVersion": "1.0",
+        "description": "An open source Python client for connecting to and using multiple ready-made Model Context Protocol (MCP) servers.",
+        "author": {
+            "@type": "Organization",
+            "name": "Python MCP Client Team",
+            "url": "https://github.com/kernelmax/python-mcp-client"
+        },
+        "codeRepository": "https://github.com/kernelmax/python-mcp-client",
+        "programmingLanguage": "Python",
+        "keywords": "MCP, Model Context Protocol, MCP Client, MCP Server, Python Client, LangChain"
+    }
+    </script>
+</body>
+</html> 
