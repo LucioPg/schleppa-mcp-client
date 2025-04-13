@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Client</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #02343F;
+            --bg-sidebar: #02343F;
+            --bg-card: #50586C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #F0EDCC;
+            --primary-color: #2BAE66;
+            --primary-dark: #249555;
+            --primary-light: #3FCA7D;
+            --secondary-color: #F0EDCC;
+            --accent-color: #2BAE66;
+            --color-accent: #2BAE66;
+            --color-accent-muted: rgba(43, 174, 102, 0.15);
+            --tool-color: #50586C;
+            --danger-color: #F76C6C;
+            --border-color: rgba(240, 237, 204, 0.2);
+            --input-bg: #50586C;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --gradient-bg: linear-gradient(135deg, #02343F 0%, #033F4C 100%);
+            --card-gradient: linear-gradient(to right, #50586C, #434A5C);
+            --header-gradient: linear-gradient(to right, #02343F, #033F4C);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            width: 320px;
+            height: 100%;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-sidebar);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+        
+        .tool-list-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .tool-card {
+            margin-bottom: 12px;
+            border-left: 3px solid var(--secondary-color);
+            background: var(--card-gradient);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-left-color: var(--primary-color);
+        }
+        
+        .tool-card .card-body {
+            padding: 12px;
+        }
+        
+        .tool-card .card-title {
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .tool-card .card-title i {
+            margin-right: 8px;
+            color: #2BAE66;
+            font-size: 0.9rem;
+        }
+        
+        .tool-card .card-text {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .sidebar-header i {
+            margin-right: 10px;
+            color: #2BAE66;
+            font-size: 1rem;
+        }
+        
+        .about-section {
+            padding: 15px;
+            background: rgba(55, 65, 81, 0.5);
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+        
+        .about-section h5 {
+            color: #2BAE66;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .about-section h5 i {
+            margin-right: 8px;
+        }
+        
+        .about-section p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        
+        .server-details {
+            background: rgba(55, 65, 81, 0.5);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .server-details.active {
+            border-left: 3px solid #2BAE66;
+            background: rgba(43, 174, 102, 0.1);
+        }
+        
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 15px;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .server-header:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .server-header h6 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .server-header h6 i {
+            margin-right: 8px;
+            color: #2BAE66;
+        }
+        
+        .server-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: rgba(17, 24, 39, 0.4);
+        }
+        
+        .server-content.expanded {
+            max-height: 500px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .server-info-details {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .server-tools {
+            padding: 10px 15px;
+        }
+        
+        .no-tools, .no-servers, .error-message {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 15px;
+            opacity: 0.7;
+        }
+        
+        .error-message {
+            color: #f87171;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .loading-spinner i {
+            margin-right: 8px;
+            color: #2BAE66;
+        }
+        
+        #servers-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: var(--header-gradient);
+            border-bottom: 1px solid var(--border-color);
+            color: white;
+            padding: 16px 24px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        
+        .chat-header .header-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header h3 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.2rem;
+        }
+        
+        .chat-header .server-info {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            padding: 4px 12px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            margin-left: 15px;
+        }
+        
+        .chat-header i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-dark);
+            position: relative;
+        }
+        
+        .chat-messages::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            pointer-events: none;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .chat-input {
+            padding: 20px 30px;
+            background-color: var(--bg-sidebar);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-input form {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-input input {
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            flex: 1;
+            caret-color: var(--primary-light); /* Ensure visible cursor */
+        }
+        
+        .chat-input input:focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+            border-color: var(--primary-color);
+            outline: none;
+            background-color: rgba(55, 65, 81, 0.7); /* Lighter background when focused */
+        }
+        
+        .chat-input input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        
+        .chat-input button {
+            background: #2BAE66;
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+            box-shadow: 0 2px 10px rgba(43, 174, 102, 0.3);
+        }
+        
+        .chat-input button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(43, 174, 102, 0.4);
+            background: #3FCA7D;
+        }
+        
+        .chat-input button:active {
+            transform: scale(0.98);
+        }
+        
+        .chat-input button i {
+            font-size: 1.2rem;
+        }
+        
+        .message {
+            max-width: 75%;
+            margin-bottom: 25px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.3s ease;
+            line-height: 1.5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: #2BAE66;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+            position: relative;
+        }
+        
+        .tool-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--color-accent-muted);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 4px;
+            padding: 3px 6px;
+            margin-right: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tool-badge:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        
+        .tool-popover {
+            position: fixed;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            max-width: 90vw;
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+        
+        .tool-popover.show {
+            display: block;
+        }
+        
+        .tool-popover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tool-popover-header h6 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .tool-popover-header h6 i {
+            margin-right: 6px;
+            color: #2BAE66;
+        }
+        
+        .tool-popover-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 2px;
+            font-size: 0.8rem;
+        }
+        
+        .tool-popover-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .tool-popover-body {
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .bot-message a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+        
+        .bot-message a:hover {
+            text-decoration: underline;
+        }
+        
+        .bot-message pre {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .bot-message code {
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #e5e7eb;
+        }
+        
+        .tool-info {
+            align-self: flex-start;
+            background-color: #50586C;
+            border: 1px solid var(--border-color);
+            color: #F0EDCC;
+            border-bottom-left-radius: 4px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 16px;
+            max-width: 100%;
+        }
+        
+        .tool-info i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .tool-info-hidden {
+            display: none;
+        }
+        
+        .tool-message {
+            align-self: flex-start;
+            background: #50586C;
+            border: 1px solid var(--border-color);
+            color: #F0EDCC;
+            border-bottom-left-radius: 5px;
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            color: var(--text-secondary);
+            margin: 40px 0;
+            animation: fadeIn 0.5s ease;
+            padding: 35px;
+            background: rgba(2, 52, 63, 0.7);
+            border-radius: 20px;
+            max-width: 80%;
+            align-self: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(240, 237, 204, 0.1);
+        }
+        
+        .welcome-message h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .welcome-message h5 {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+        
+        .welcome-message i {
+            font-size: 3.5rem;
+            color: #2BAE66;
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+        
+        .welcome-message p {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .mcp-icon {
+            margin-right: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            width: 80px;
+            flex-shrink: 0;
+        }
+        
+        .detail-value {
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        #userInput{
+            color: white;
+        }
+
+        .connect-button {
+            display: none; /* Hide the connect button */
+        }
+
+        .server-details.active .connect-button {
+            display: none; /* Hide the connect button */
+        }
+
+        /* Custom styles for specific server types */
+        .server-details[data-server-id="mysql"] {
+            border-left: 3px solid #2BAE66;
+        }
+
+        .server-details[data-server-id="mysql"] .server-header h6 i {
+            color: #2BAE66;
+        }
+
+        .server-details[data-server-id="file"] {
+            border-left: 3px solid #F0EDCC;
+        }
+
+        .server-details[data-server-id="file"] .server-header h6 i {
+            color: #F0EDCC;
+        }
+
+        /* Add icons for specific servers */
+        .server-details[data-server-id="mysql"] .server-header h6 i {
+            content: "\f1c0";
+        }
+
+        .server-details[data-server-id="file"] .server-header h6 i {
+            content: "\f15b";
+        }
+
+        .example-queries {
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .example-query {
+            background-color: rgba(43, 174, 102, 0.15);
+            color: #F0EDCC;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(43, 174, 102, 0.3);
+            white-space: nowrap;
+            display: inline-block;
+            margin: 3px 0;
+        }
+
+        .example-query:hover {
+            background-color: rgba(43, 174, 102, 0.25);
+        }
+
+        /* New SVG loader styling */
+        .loading-message {
+            align-self: flex-start;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--box-shadow);
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            max-width: 75%;
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-message svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        /* Remove the old thinking indicator */
+        .thinking {
+            display: none;
+        }
+
+        /* Tool list in server details */
+        .server-tools {
+            padding: 10px 15px;
+        }
+
+        .server-tool-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 2px solid var(--secondary-color);
+            background-color: rgba(55, 65, 81, 0.3);
+        }
+
+        .server-tool-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .server-tool-name i {
+            margin-right: 6px;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        .server-tool-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Tool modal styling */
+        .tools-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tools-modal {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tools-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tools-modal-title {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .tools-modal-title i {
+            margin-right: 8px;
+        }
+
+        .tools-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .tools-modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .tools-modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .tools-modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+        }
+
+        .view-tools-btn {
+            background-color: var(--color-accent-muted);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .view-tools-btn i {
+            margin-right: 6px;
+        }
+
+        .view-tools-btn:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        
+        /* Add Server Button Styles */
+        .add-server-container {
+            padding: 15px 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .add-server-btn {
+            background-color: var(--color-accent-muted);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+        }
+        
+        .add-server-btn i {
+            margin-right: 8px;
+        }
+        
+        .add-server-btn:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        
+        /* Other Server List Styles */
+        .other-server-list {
+            margin-top: 10px;
+        }
+        
+        .other-server-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background-color: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+        }
+        
+        .other-server-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .other-server-info i {
+            font-size: 1.2rem;
+            color: #2BAE66;
+            margin-right: 12px;
+        }
+        
+        .other-server-details h6 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+        
+        .other-server-details p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .connect-server-btn {
+            background-color: rgba(55, 65, 81, 0.7);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+        
+        .connect-server-btn:not([disabled]) {
+            background-color: var(--color-accent-muted);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            cursor: pointer;
+        }
+        
+        .connect-server-btn:not([disabled]):hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        
+        .server-form {
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .server-manual-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .server-note {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .form-control:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .server-list-container h6, 
+        .server-manual-container h6 {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .add-manual-server-btn {
+            background-color: var(--color-accent-muted);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .add-manual-server-btn i {
+            margin-right: 8px;
+        }
+        
+        .add-manual-server-btn:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+        
+        .server-error-message {
+            color: #F76C6C;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Config Tabs */
+        .config-tabs {
+            margin-bottom: 15px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-btn.active {
+            color: var(--color-accent);
+            border-bottom: 2px solid var(--color-accent);
+        }
+        
+        .tab-content {
+            padding-top: 15px;
+        }
+        
+        .json-input {
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        /* Theme Switcher Styles */
+        .theme-toggle {
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+        }
+        
+        .theme-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100%;
+            background-color: var(--bg-sidebar);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .theme-panel.open {
+            right: 0;
+        }
+        
+        .theme-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .theme-panel-overlay.open {
+            display: block;
+        }
+        
+        .theme-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .theme-panel-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        
+        .theme-panel-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .theme-panel-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .theme-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .theme-option {
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        
+        .theme-option.active {
+            border-color: var(--color-accent);
+        }
+        
+        .theme-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-preview {
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .theme-preview-header {
+            height: 25%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-preview-sidebar {
+            width: 30%;
+            height: 75%;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            float: left;
+        }
+        
+        .theme-preview-content {
+            width: 70%;
+            height: 75%;
+            float: left;
+        }
+        
+        .theme-name {
+            text-align: center;
+            padding: 8px 0;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-active-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--color-accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .theme-option.active .theme-active-indicator {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar with tools -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-server"></i>MCP</h4>
+        </div>
+        
+        <div id="servers-container">
+            <!-- Servers will be loaded here via AJAX -->
+            <div class="loading-spinner">
+                <i class="fas fa-circle-notch fa-spin"></i> Loading servers...
+            </div>
+        </div>
+        
+        <!-- Add Server Button -->
+        <div class="add-server-container">
+            <button id="addServerBtn" class="add-server-btn">
+                <i class="fas fa-plus"></i> Add Server
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tools Modal -->
+    <div id="toolsModalOverlay" class="tools-modal-overlay">
+        <div class="tools-modal">
+            <div class="tools-modal-header">
+                <h5 class="tools-modal-title"><i class="fas fa-wrench"></i>Server Tools</h5>
+                <button class="tools-modal-close" id="closeToolsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tools-modal-body" id="toolsModalBody">
+                <!-- Tools will be loaded here -->
+            </div>
+            <div class="tools-modal-footer">
+                <button class="view-tools-btn" id="closeModalBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Server Modal -->
+    <div id="addServerModalOverlay" class="tools-modal-overlay">
+        <div class="tools-modal">
+            <div class="tools-modal-header">
+                <h5 class="tools-modal-title"><i class="fas fa-server"></i>Add MCP Server</h5>
+                <button class="tools-modal-close" id="closeAddServerModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tools-modal-body" id="addServerModalBody">
+                <div class="server-list-container">
+                    <h6>Enterprise Integrations</h6>
+                    <div class="other-server-list">
+                        <div class="other-server-item">
+                            <div class="other-server-info">
+                                <i class="fab fa-slack"></i>
+                                <div class="other-server-details">
+                                    <h6>Slack Integration</h6>
+                                    <p>Connect to Slack workspace and channels</p>
+                                </div>
+                            </div>
+                            <button class="connect-server-btn" disabled>Coming Soon</button>
+                        </div>
+                        <div class="other-server-item">
+                            <div class="other-server-info">
+                                <i class="fab fa-salesforce"></i>
+                                <div class="other-server-details">
+                                    <h6>Salesforce Integration</h6>
+                                    <p>CRM integration for customer data</p>
+                                </div>
+                            </div>
+                            <button class="connect-server-btn" disabled>Coming Soon</button>
+                        </div>
+                        <div class="other-server-item">
+                            <div class="other-server-info">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <div class="other-server-details">
+                                    <h6>Razorpay Integration</h6>
+                                    <p>Payment processing integration</p>
+                                </div>
+                            </div>
+                            <button class="connect-server-btn" disabled>Coming Soon</button>
+                        </div>
+                        <div class="other-server-item">
+                            <div class="other-server-info">
+                                <i class="fab fa-google"></i>
+                                <div class="other-server-details">
+                                    <h6>Google Cloud Platform</h6>
+                                    <p>GCP service integrations</p>
+                                </div>
+                            </div>
+                            <button class="connect-server-btn" disabled>Coming Soon</button>
+                        </div>
+                        <div class="other-server-item">
+                            <div class="other-server-info">
+                                <i class="fab fa-microsoft"></i>
+                                <div class="other-server-details">
+                                    <h6>Azure Cloud Services</h6>
+                                    <p>Azure and Microsoft service integrations</p>
+                                </div>
+                            </div>
+                            <button class="connect-server-btn" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="server-manual-container">
+                    <h6>Manual Configuration</h6>
+                    <p class="server-note">Connect to a custom MCP server by providing connection details.</p>
+                    
+                    <div class="config-tabs">
+                        <div class="tab-buttons">
+                            <button id="formTabBtn" class="tab-btn active">Form</button>
+                            <button id="jsonTabBtn" class="tab-btn">JSON</button>
+                        </div>
+                    </div>
+                    
+                    <div id="formConfigTab" class="tab-content">
+                        <div class="server-form" id="manualServerForm">
+                            <div class="form-group">
+                                <label>Server Name</label>
+                                <input type="text" class="form-control" id="serverName" placeholder="Enter server name">
+                            </div>
+                            <div class="form-group">
+                                <label>Command</label>
+                                <input type="text" class="form-control" id="serverCommand" placeholder="e.g. python" value="python">
+                            </div>
+                            <div class="form-group">
+                                <label>Script Path</label>
+                                <input type="text" class="form-control" id="serverArgs" placeholder="e.g. path/to/your_mcp_server.py">
+                            </div>
+                            <div class="form-group">
+                                <label>Transport</label>
+                                <select class="form-control" id="serverTransport">
+                                    <option value="stdio">stdio</option>
+                                    <option value="http">http</option>
+                                    <option value="websocket">websocket</option>
+                                </select>
+                            </div>
+                            <button class="add-manual-server-btn" id="addManualServerBtn">
+                                <i class="fas fa-plus-circle"></i> Add Server
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="jsonConfigTab" class="tab-content" style="display: none;">
+                        <div class="form-group">
+                            <label>Server Name</label>
+                            <input type="text" class="form-control" id="jsonServerName" placeholder="Enter server name">
+                        </div>
+                        <div class="form-group">
+                            <label>JSON Configuration</label>
+                            <textarea id="jsonConfig" class="form-control json-input" rows="6" placeholder='{
+    "command": "python",
+    "args": ["path/to/your_script.py"],
+    "transport": "stdio"
+}'></textarea>
+                        </div>
+                        <button class="add-manual-server-btn" id="addJsonServerBtn">
+                            <i class="fas fa-plus-circle"></i> Add Server
+                        </button>
+                    </div>
+                    
+                    <div id="addServerError" class="server-error-message"></div>
+                </div>
+            </div>
+            <div class="tools-modal-footer">
+                <button class="view-tools-btn" id="closeAddServerBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main chat area -->
+    <div class="main-content">
+        <div class="chat-header">
+            <div class="header-title">
+                <svg class="mcp-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4C8.68629 4 6 6.68629 6 10C6 11.2144 6.36084 12.3435 6.98117 13.2895C7.89138 14.7478 7.89138 16.6456 6.98117 18.1039M12 4C15.3137 4 18 6.68629 18 10C18 11.2144 17.6392 12.3435 17.0188 13.2895C16.1086 14.7478 16.1086 16.6456 17.0188 18.1039M12 4V2M6.98117 18.1039C6.46012 18.9073 5.55694 19.4634 4.5 19.5V22M17.0188 18.1039C17.5399 18.9073 18.4431 19.4634 19.5 19.5V22M8.5 10.5H15.5M8.5 13.5H15.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="10" r="8" stroke="white" stroke-width="2" opacity="0.2"/>
+                </svg>
+                <h3>PYTHON MCP CLIENT</h3>
+                <span class="server-info">Connected to MCP servers</span>
+            </div>
+            <div class="theme-toggle" id="themeToggle">
+                <i class="fas fa-palette"></i>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <i class="fas fa-terminal"></i>
+                <h4>MCP Client Interface</h4>
+                <p class="example-queries">Try asking: <span class="example-query">"Query the users table in MySQL"</span> or <span class="example-query">"List files in the current directory"</span></p>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <form id="messageForm">
+                <input type="text" id="userInput"  class="form-control" placeholder="Type your message..." autocomplete="off">
+                <button type="submit" class="btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Theme Panel -->
+    <div class="theme-panel-overlay" id="themePanelOverlay"></div>
+    <div class="theme-panel" id="themePanel">
+        <div class="theme-panel-header">
+            <h4>Select Theme</h4>
+            <button class="theme-panel-close" id="themePanelClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="theme-options">
+            <div class="theme-option active" data-theme="default">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #02343F;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #02343F;"></div>
+                    <div class="theme-preview-content" style="background-color: #02343F;"></div>
+                </div>
+                <div class="theme-name">Default</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="theme-option" data-theme="dark">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #1a1d25;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #22252f;"></div>
+                    <div class="theme-preview-content" style="background-color: #1a1d25;"></div>
+                </div>
+                <div class="theme-name">Dark</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="theme-option" data-theme="night">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #000000;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #000000;"></div>
+                    <div class="theme-preview-content" style="background-color: #000000;"></div>
+                </div>
+                <div class="theme-name">Night</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="theme-option" data-theme="forest">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #2C3639;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #3F4E4F;"></div>
+                    <div class="theme-preview-content" style="background-color: #2C3639;"></div>
+                </div>
+                <div class="theme-name">Forest</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="theme-option" data-theme="ocean">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #1A374D;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #406882;"></div>
+                    <div class="theme-preview-content" style="background-color: #1A374D;"></div>
+                </div>
+                <div class="theme-name">Ocean</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="theme-option" data-theme="purple">
+                <div class="theme-preview">
+                    <div class="theme-preview-header" style="background-color: #392467;"></div>
+                    <div class="theme-preview-sidebar" style="background-color: #5D3587;"></div>
+                    <div class="theme-preview-content" style="background-color: #392467;"></div>
+                </div>
+                <div class="theme-name">Purple</div>
+                <div class="theme-active-indicator"><i class="fas fa-check"></i></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // DOM Elements
+        const messageForm = document.getElementById('messageForm');
+        const userInput = document.getElementById('userInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const serversContainer = document.getElementById('servers-container');
+        const toolsModalOverlay = document.getElementById('toolsModalOverlay');
+        const toolsModalBody = document.getElementById('toolsModalBody');
+        const closeToolsModal = document.getElementById('closeToolsModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const addServerBtn = document.getElementById('addServerBtn');
+        const addServerModalOverlay = document.getElementById('addServerModalOverlay');
+        const closeAddServerModal = document.getElementById('closeAddServerModal');
+        const closeAddServerBtn = document.getElementById('closeAddServerBtn');
+        
+        // Modal Functions
+        function showToolsModal(serverId, serverName) {
+            // Set modal title
+            document.querySelector('.tools-modal-title').innerHTML = `<i class="fas fa-wrench"></i>${serverName} Tools`;
+            
+            // Load tools into modal
+            toolsModalBody.innerHTML = '<div class="loading-spinner"><i class="fas fa-circle-notch fa-spin"></i> Loading tools...</div>';
+            
+            // Show modal
+            toolsModalOverlay.style.display = 'flex';
+            
+            // Fetch tools for this server
+            fetch('/api/tools')
+                .then(response => response.json())
+                .then(tools => {
+                    console.log("All tools:", tools);
+                    
+                    // Filter tools for this server
+                    const serverTools = tools.filter(tool => {
+                        if (tool.server) {
+                            return tool.server === serverId;
+                        } else {
+                            // Fallback server assignment based on tool name
+                            if (serverId === 'mysql') {
+                                return tool.name.toLowerCase().includes('sql') || 
+                                    tool.name.toLowerCase().includes('database') ||
+                                    tool.name.toLowerCase().includes('query');
+                            } else if (serverId === 'file') {
+                                return tool.name.toLowerCase().includes('file') || 
+                                    tool.name.toLowerCase().includes('read') || 
+                                    tool.name.toLowerCase().includes('write') ||
+                                    tool.name.toLowerCase().includes('list');
+                            }
+                            return false;
+                        }
+                    });
+                    
+                    console.log(`Tools for ${serverId}:`, serverTools);
+                    
+                    if (serverTools.length > 0) {
+                        let toolsHTML = '';
+                        serverTools.forEach(tool => {
+                            const description = tool.description || "No description available";
+                            toolsHTML += `
+                                <div class="server-tool-item">
+                                    <div class="server-tool-name">
+                                        <i class="fas fa-wrench"></i>${tool.name}
+                                    </div>
+                                    <div class="server-tool-description">${description}</div>
+                                </div>
+                            `;
+                        });
+                        toolsModalBody.innerHTML = toolsHTML;
+                    } else {
+                        toolsModalBody.innerHTML = '<div class="no-tools">No tools available for this server</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching tools:', error);
+                    toolsModalBody.innerHTML = '<div class="error-message">Failed to load tools</div>';
+                });
+        }
+        
+        function hideToolsModal() {
+            toolsModalOverlay.style.display = 'none';
+        }
+        
+        // Modal event listeners
+        closeToolsModal.addEventListener('click', hideToolsModal);
+        closeModalBtn.addEventListener('click', hideToolsModal);
+        toolsModalOverlay.addEventListener('click', function(e) {
+            if (e.target === toolsModalOverlay) {
+                hideToolsModal();
+            }
+        });
+        
+        // Toggle server section
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.server-header') || e.target.closest('.toggle-icon')) {
+                const header = e.target.closest('.server-header') || e.target.closest('.toggle-icon').parentNode;
+                const content = header.nextElementSibling;
+                content.classList.toggle('expanded');
+                header.querySelector('.toggle-icon').classList.toggle('collapsed');
+            }
+        });
+        
+        // Tool popover management
+        let activePopover = null;
+        
+        function closeAllPopovers() {
+            document.querySelectorAll('.tool-popover').forEach(popover => {
+                popover.classList.remove('show');
+            });
+            activePopover = null;
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.tool-badge') && !e.target.closest('.tool-popover')) {
+                closeAllPopovers();
+            }
+        });
+        
+        // Load servers and tools via AJAX
+        function loadServers() {
+            fetch('/api/servers')
+                .then(response => response.json())
+                .then(data => {
+                    serversContainer.innerHTML = '';
+                    console.log(data);
+                    
+                    // Handle the server response format
+                    const serverArray = Object.entries(data).map(([name, details]) => ({
+                        id: name,
+                        name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
+                        type: "Python",
+                        command: details.command,
+                        transport: details.transport || "stdio",
+                        args: details.args || []
+                    }));
+                    
+                    if (serverArray.length > 0) {
+                        serverArray.forEach((server, index) => {
+                            const serverElement = createServerElement(server);
+                            serversContainer.appendChild(serverElement);
+                            
+                            // Expand the first server by default
+                            if (index === 0) {
+                                const content = serverElement.querySelector('.server-content');
+                                const toggleIcon = serverElement.querySelector('.toggle-icon');
+                                content.classList.add('expanded');
+                                toggleIcon.classList.remove('collapsed');
+                            }
+                        });
+                        
+                        // Enable the input field automatically
+                        userInput.disabled = false;
+                        userInput.placeholder = "Type your message...";
+                        userInput.focus();
+                        
+                        // Show connected status
+                        document.querySelector('.server-info').textContent = `${serverArray.length} servers available`;
+                    } else {
+                        serversContainer.innerHTML = '<div class="no-servers">No MCP servers available</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading servers:', error);
+                    serversContainer.innerHTML = '<div class="error-message">Failed to load servers</div>';
+                });
+        }
+        
+        // Function to create server element with collapsible details
+        function createServerElement(server) {
+            const serverElement = document.createElement('div');
+            serverElement.className = 'server-details';
+            serverElement.dataset.serverId = server.id;
+            
+            // Set icon based on server type
+            let iconClass = 'fa-server';
+            if (server.id === 'mysql') {
+                iconClass = 'fa-database';
+            } else if (server.id === 'file') {
+                iconClass = 'fa-file-alt';
+            }
+            
+            // Create server header
+            const serverHeader = document.createElement('div');
+            serverHeader.className = 'server-header';
+            serverHeader.innerHTML = `
+                <h6><i class="fas ${iconClass}"></i>${server.name} MCP Server</h6>
+                <i class="fas fa-chevron-down toggle-icon collapsed"></i>
+            `;
+            
+            // Create server info content
+            const serverContent = document.createElement('div');
+            serverContent.className = 'server-content';
+            
+            // Add server details
+            const serverInfo = document.createElement('div');
+            serverInfo.className = 'server-info-details';
+            
+            let serverDetailsHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">${server.type}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Command:</span>
+                    <span class="detail-value">${server.command}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Transport:</span>
+                    <span class="detail-value">${server.transport}</span>
+                </div>
+            `;
+            
+            if (server.args && server.args.length > 0) {
+                serverDetailsHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">Script:</span>
+                        <span class="detail-value">${server.args[0].split('/').pop()}</span>
+                    </div>
+                `;
+            }
+            
+            // Add View Tools button
+            serverDetailsHTML += `
+                <button class="view-tools-btn" data-server-id="${server.id}" data-server-name="${server.name}">
+                    <i class="fas fa-tools"></i> View Tools
+                </button>
+            `;
+            
+            serverInfo.innerHTML = serverDetailsHTML;
+            
+            // Add click event for View Tools button
+            serverInfo.querySelector('.view-tools-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const serverId = this.dataset.serverId;
+                const serverName = this.dataset.serverName;
+                showToolsModal(serverId, serverName);
+            });
+            
+            // Assemble server element
+            serverContent.appendChild(serverInfo);
+            serverElement.appendChild(serverHeader);
+            serverElement.appendChild(serverContent);
+            
+            return serverElement;
+        }
+        
+        // Show thinking indicator as an animated SVG
+        function showThinking() {
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'loading-message';
+            loadingMessage.id = 'loadingMessage';
+            loadingMessage.innerHTML = `
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="4" cy="12" r="2" fill="#7e8cc0">
+                        <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0" />
+                    </circle>
+                    <circle cx="12" cy="12" r="2" fill="#7e8cc0">
+                        <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.3" />
+                    </circle>
+                    <circle cx="20" cy="12" r="2" fill="#7e8cc0">
+                        <animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.6" />
+                    </circle>
+                </svg>
+                <span>Processing your request...</span>
+            `;
+            chatMessages.appendChild(loadingMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Hide thinking indicator
+        function hideThinking() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+        
+        // Handle form submission
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addUserMessage(message);
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show thinking indicator
+            showThinking();
+            
+            try {
+                // Send message to server
+                const response = await fetch('/api/process_query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: message
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide thinking indicator
+                hideThinking();
+                
+                if (response.ok) {
+                    // Display final answer with tool badges
+                    if (data.final_answer) {
+                        addBotMessage(data.final_answer, data.tool_usage);
+                    } else {
+                        addBotMessage('Sorry, I could not process this request.', []);
+                    }
+                } else {
+                    addBotMessage(`Error: ${data.error || 'Something went wrong'}`, []);
+                }
+            } catch (error) {
+                hideThinking();
+                addBotMessage(`Error: ${error.message}`, []);
+            }
+        });
+        
+        // Load servers on page load
+        window.addEventListener('load', () => {
+            // Update welcome message
+            const welcomeMessage = document.querySelector('.welcome-message');
+            welcomeMessage.innerHTML = `
+                <i class="fas fa-terminal"></i>
+                <h4>MCP Client Interface</h4>
+                <p class="example-queries">Try asking: <span class="example-query">"Query the users table in MySQL"</span> or <span class="example-query">"List files in the current directory"</span></p>
+            `;
+            
+            // Add event listeners to example queries
+            document.querySelectorAll('.example-query').forEach(query => {
+                query.addEventListener('click', () => {
+                    userInput.value = query.textContent;
+                    userInput.focus();
+                    // Trigger the form submission
+                    const submitEvent = new Event('submit');
+                    messageForm.dispatchEvent(submitEvent);
+                });
+            });
+            
+            // Load servers
+            loadServers();
+        });
+
+        // Add a user message to the chat
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Create a tool badge with popover
+        function createToolBadge(tool) {
+            console.log("Creating tool badge for:", tool);
+            
+            const badge = document.createElement('div');
+            badge.className = 'tool-badge';
+            
+            // Determine tool name to display
+            const toolName = tool.tool || tool.name || "Tool";
+            badge.innerHTML = `<i class="fas fa-wrench"></i>${toolName}`;
+            
+            const popover = document.createElement('div');
+            popover.className = 'tool-popover';
+            
+            const popoverHeader = document.createElement('div');
+            popoverHeader.className = 'tool-popover-header';
+            popoverHeader.innerHTML = `
+                <h6><i class="fas fa-wrench"></i>${toolName}</h6>
+                <button class="tool-popover-close"><i class="fas fa-times"></i></button>
+            `;
+            
+            const popoverBody = document.createElement('div');
+            popoverBody.className = 'tool-popover-body';
+            
+            // Format the tool arguments or result
+            if (tool.args) {
+                popoverBody.textContent = JSON.stringify(tool.args, null, 2);
+            } else if (tool.result) {
+                popoverBody.textContent = typeof tool.result === 'object' ? 
+                    JSON.stringify(tool.result, null, 2) : tool.result;
+            } else {
+                popoverBody.textContent = "No details available";
+            }
+            
+            popover.appendChild(popoverHeader);
+            popover.appendChild(popoverBody);
+            
+            // Position the popover below the badge
+            badge.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Close any open popovers
+                if (activePopover && activePopover !== popover) {
+                    activePopover.classList.remove('show');
+                }
+                
+                // Toggle popover visibility
+                popover.classList.toggle('show');
+                
+                if (popover.classList.contains('show')) {
+                    const rect = badge.getBoundingClientRect();
+                    popover.style.top = `${rect.bottom + 10}px`;
+                    popover.style.left = `${rect.left}px`;
+                    activePopover = popover;
+                } else {
+                    activePopover = null;
+                }
+            });
+            
+            // Add close button functionality
+            popover.querySelector('.tool-popover-close').addEventListener('click', (e) => {
+                e.stopPropagation();
+                popover.classList.remove('show');
+                activePopover = null;
+            });
+            
+            return { badge, popover };
+        }
+
+        // Add a bot message to the chat with markdown support and tool badges
+        function addBotMessage(message, tools) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            
+            // Parse markdown and set as HTML
+            messageDiv.innerHTML = marked.parse(message);
+            
+            // Add tool badges if tools were used
+            if (tools && tools.length > 0) {
+                const badgesContainer = document.createElement('div');
+                badgesContainer.style.display = 'flex';
+                badgesContainer.style.flexWrap = 'wrap';
+                badgesContainer.style.gap = '5px';
+                
+                tools.forEach(tool => {
+                    const { badge, popover } = createToolBadge(tool);
+                    badgesContainer.appendChild(badge);
+                    messageDiv.appendChild(popover);
+                });
+                
+                messageDiv.appendChild(badgesContainer);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add Server Modal Functions
+        function showAddServerModal() {
+            addServerModalOverlay.style.display = 'flex';
+        }
+        
+        function hideAddServerModal() {
+            addServerModalOverlay.style.display = 'none';
+            
+            // Clear form values
+            document.getElementById('serverName').value = '';
+            document.getElementById('serverArgs').value = '';
+            document.getElementById('jsonServerName').value = '';
+            document.getElementById('jsonConfig').value = '';
+            document.getElementById('addServerError').style.display = 'none';
+        }
+        
+        // Tab switching functions
+        const formTabBtn = document.getElementById('formTabBtn');
+        const jsonTabBtn = document.getElementById('jsonTabBtn');
+        const formConfigTab = document.getElementById('formConfigTab');
+        const jsonConfigTab = document.getElementById('jsonConfigTab');
+        
+        formTabBtn.addEventListener('click', function() {
+            formTabBtn.classList.add('active');
+            jsonTabBtn.classList.remove('active');
+            formConfigTab.style.display = 'block';
+            jsonConfigTab.style.display = 'none';
+        });
+        
+        jsonTabBtn.addEventListener('click', function() {
+            jsonTabBtn.classList.add('active');
+            formTabBtn.classList.remove('active');
+            jsonConfigTab.style.display = 'block';
+            formConfigTab.style.display = 'none';
+        });
+        
+        // Add manual server
+        const addManualServerBtn = document.getElementById('addManualServerBtn');
+        addManualServerBtn.addEventListener('click', function() {
+            const serverName = document.getElementById('serverName').value.trim();
+            const serverCommand = document.getElementById('serverCommand').value.trim();
+            const serverArgs = document.getElementById('serverArgs').value.trim();
+            const serverTransport = document.getElementById('serverTransport').value;
+            const errorElement = document.getElementById('addServerError');
+            
+            // Validation
+            if (!serverName) {
+                errorElement.textContent = 'Please enter a server name';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            if (!serverArgs) {
+                errorElement.textContent = 'Please enter script path';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Create server config
+            const serverConfig = {
+                command: serverCommand,
+                args: [serverArgs],
+                transport: serverTransport
+            };
+            
+            // Add server
+            addServerToSystem(serverName, serverConfig);
+        });
+        
+        // Add server with JSON config
+        const addJsonServerBtn = document.getElementById('addJsonServerBtn');
+        addJsonServerBtn.addEventListener('click', function() {
+            const serverName = document.getElementById('jsonServerName').value.trim();
+            const jsonConfigStr = document.getElementById('jsonConfig').value.trim();
+            const errorElement = document.getElementById('addServerError');
+            
+            // Validation
+            if (!serverName) {
+                errorElement.textContent = 'Please enter a server name';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            if (!jsonConfigStr) {
+                errorElement.textContent = 'Please enter JSON configuration';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Parse JSON
+            try {
+                const serverConfig = JSON.parse(jsonConfigStr);
+                
+                // Validate JSON structure
+                if (!serverConfig.command) {
+                    errorElement.textContent = 'JSON must include "command" field';
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                if (!serverConfig.args || !Array.isArray(serverConfig.args) || serverConfig.args.length === 0) {
+                    errorElement.textContent = 'JSON must include "args" as a non-empty array';
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                if (!serverConfig.transport) {
+                    errorElement.textContent = 'JSON must include "transport" field';
+                    errorElement.style.display = 'block';
+                    return;
+                }
+                
+                // Add server
+                addServerToSystem(serverName, serverConfig);
+            } catch (e) {
+                errorElement.textContent = 'Invalid JSON format: ' + e.message;
+                errorElement.style.display = 'block';
+                return;
+            }
+        });
+        
+        // Common function to add server
+        function addServerToSystem(serverName, serverConfig) {
+            const errorElement = document.getElementById('addServerError');
+            
+            // Send request to add server
+            fetch('/api/add_server', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: serverName,
+                    config: serverConfig
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add new server to UI
+                    const server = {
+                        id: serverName.toLowerCase(),
+                        name: serverName,
+                        type: "Python",
+                        command: serverConfig.command,
+                        transport: serverConfig.transport,
+                        args: serverConfig.args
+                    };
+                    
+                    const serverElement = createServerElement(server);
+                    serversContainer.appendChild(serverElement);
+                    
+                    // Update server count
+                    const serverCount = document.querySelectorAll('.server-details').length;
+                    document.querySelector('.server-info').textContent = `${serverCount} servers available`;
+                    
+                    // Close modal
+                    hideAddServerModal();
+                    
+                    // Show success message
+                    addBotMessage(`Successfully added new MCP server: ${serverName}`, []);
+                } else {
+                    errorElement.textContent = data.error || 'Failed to add server';
+                    errorElement.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error adding server:', error);
+                errorElement.textContent = 'Error connecting to server';
+                errorElement.style.display = 'block';
+            });
+        }
+        
+        // Add Server Modal event listeners
+        addServerBtn.addEventListener('click', showAddServerModal);
+        closeAddServerModal.addEventListener('click', hideAddServerModal);
+        closeAddServerBtn.addEventListener('click', hideAddServerModal);
+        addServerModalOverlay.addEventListener('click', function(e) {
+            if (e.target === addServerModalOverlay) {
+                hideAddServerModal();
+            }
+        });
+        
+        // Theme switcher functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themePanel = document.getElementById('themePanel');
+        const themePanelOverlay = document.getElementById('themePanelOverlay');
+        const themePanelClose = document.getElementById('themePanelClose');
+        const themeOptions = document.querySelectorAll('.theme-option');
+        
+        // Theme definitions
+        const themes = {
+            default: {
+                '--bg-dark': '#02343F',
+                '--bg-sidebar': '#02343F',
+                '--bg-card': '#50586C',
+                '--text-primary': '#FFFFFF',
+                '--text-secondary': '#F0EDCC',
+                '--primary-color': '#2BAE66',
+                '--primary-dark': '#249555',
+                '--primary-light': '#3FCA7D',
+                '--secondary-color': '#F0EDCC',
+                '--accent-color': '#2BAE66',
+                '--color-accent': '#2BAE66',
+                '--color-accent-muted': 'rgba(43, 174, 102, 0.15)',
+                '--border-color': 'rgba(240, 237, 204, 0.2)',
+                '--input-bg': '#50586C',
+                '--gradient-bg': 'linear-gradient(135deg, #02343F 0%, #033F4C 100%)',
+                '--card-gradient': 'linear-gradient(to right, #50586C, #434A5C)',
+                '--header-gradient': 'linear-gradient(to right, #02343F, #033F4C)'
+            },
+            dark: {
+                '--bg-dark': '#1a1d25',
+                '--bg-sidebar': '#22252f',
+                '--bg-card': '#2c2f3a',
+                '--text-primary': '#e1e2e6',
+                '--text-secondary': '#a7aab6',
+                '--primary-color': '#486eb8',
+                '--primary-dark': '#3a5798',
+                '--primary-light': '#5a81cb',
+                '--secondary-color': '#41806a',
+                '--accent-color': '#6666b0',
+                '--color-accent': '#6666b0',
+                '--color-accent-muted': 'rgba(102, 102, 176, 0.1)',
+                '--border-color': '#3d404d',
+                '--input-bg': '#2c2f3a',
+                '--gradient-bg': 'linear-gradient(135deg, #1a1d25 0%, #22252f 100%)',
+                '--card-gradient': 'linear-gradient(to right, rgba(44, 47, 58, 0.8), rgba(44, 47, 58, 0.6))',
+                '--header-gradient': 'linear-gradient(to right, #3a5798, #486eb8)'
+            },
+            night: {
+                '--bg-dark': '#000000',
+                '--bg-sidebar': '#000000',
+                '--bg-card': '#121212',
+                '--text-primary': '#FFFFFF',
+                '--text-secondary': 'rgba(255, 255, 255, 0.7)',
+                '--primary-color': '#FFFFFF',
+                '--primary-dark': 'rgba(255, 255, 255, 0.8)',
+                '--primary-light': '#FFFFFF',
+                '--secondary-color': '#FFFFFF',
+                '--accent-color': '#FFFFFF',
+                '--color-accent': '#FFFFFF',
+                '--color-accent-muted': 'rgba(255, 255, 255, 0.1)',
+                '--border-color': 'rgba(255, 255, 255, 0.2)',
+                '--input-bg': '#121212',
+                '--gradient-bg': 'linear-gradient(135deg, #000000 0%, #000000 100%)',
+                '--card-gradient': 'linear-gradient(to right, #121212, #121212)',
+                '--header-gradient': 'linear-gradient(to right, #000000, #000000)'
+            },
+            forest: {
+                '--bg-dark': '#2C3639',
+                '--bg-sidebar': '#3F4E4F',
+                '--bg-card': '#3F4E4F',
+                '--text-primary': '#DCD7C9',
+                '--text-secondary': '#A27B5C',
+                '--primary-color': '#7D9D9C',
+                '--primary-dark': '#576F72',
+                '--primary-light': '#8FBDD3',
+                '--secondary-color': '#A27B5C',
+                '--accent-color': '#7D9D9C',
+                '--color-accent': '#7D9D9C',
+                '--color-accent-muted': 'rgba(125, 157, 156, 0.15)',
+                '--border-color': 'rgba(220, 215, 201, 0.2)',
+                '--input-bg': '#3F4E4F',
+                '--gradient-bg': 'linear-gradient(135deg, #2C3639 0%, #3F4E4F 100%)',
+                '--card-gradient': 'linear-gradient(to right, #3F4E4F, #364445)',
+                '--header-gradient': 'linear-gradient(to right, #2C3639, #3F4E4F)'
+            },
+            ocean: {
+                '--bg-dark': '#1A374D',
+                '--bg-sidebar': '#406882',
+                '--bg-card': '#406882',
+                '--text-primary': '#F9F9F9',
+                '--text-secondary': '#B1D0E0',
+                '--primary-color': '#6998AB',
+                '--primary-dark': '#1A374D',
+                '--primary-light': '#B1D0E0',
+                '--secondary-color': '#B1D0E0',
+                '--accent-color': '#6998AB',
+                '--color-accent': '#6998AB',
+                '--color-accent-muted': 'rgba(105, 152, 171, 0.15)',
+                '--border-color': 'rgba(177, 208, 224, 0.2)',
+                '--input-bg': '#406882',
+                '--gradient-bg': 'linear-gradient(135deg, #1A374D 0%, #406882 100%)',
+                '--card-gradient': 'linear-gradient(to right, #406882, #365b74)',
+                '--header-gradient': 'linear-gradient(to right, #1A374D, #406882)'
+            },
+            purple: {
+                '--bg-dark': '#392467',
+                '--bg-sidebar': '#5D3587',
+                '--bg-card': '#5D3587',
+                '--text-primary': '#F1EAFF',
+                '--text-secondary': '#A367B1',
+                '--primary-color': '#A367B1',
+                '--primary-dark': '#392467',
+                '--primary-light': '#D09CFA',
+                '--secondary-color': '#A367B1',
+                '--accent-color': '#A367B1',
+                '--color-accent': '#A367B1',
+                '--color-accent-muted': 'rgba(163, 103, 177, 0.15)',
+                '--border-color': 'rgba(241, 234, 255, 0.2)',
+                '--input-bg': '#5D3587',
+                '--gradient-bg': 'linear-gradient(135deg, #392467 0%, #5D3587 100%)',
+                '--card-gradient': 'linear-gradient(to right, #5D3587, #4f2e72)',
+                '--header-gradient': 'linear-gradient(to right, #392467, #5D3587)'
+            }
+        };
+        
+        // Function to open theme panel
+        function openThemePanel() {
+            themePanel.classList.add('open');
+            themePanelOverlay.classList.add('open');
+        }
+        
+        // Function to close theme panel
+        function closeThemePanel() {
+            themePanel.classList.remove('open');
+            themePanelOverlay.classList.remove('open');
+        }
+        
+        // Function to apply theme
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+            
+            // Mark the selected theme as active
+            document.querySelectorAll('.theme-option').forEach(option => {
+                if (option.dataset.theme === themeName) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // Apply theme CSS variables
+            const root = document.documentElement;
+            for (const [property, value] of Object.entries(theme)) {
+                root.style.setProperty(property, value);
+            }
+            
+            // Save theme preference
+            localStorage.setItem('preferredTheme', themeName);
+        }
+        
+        // Load saved theme or default
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('preferredTheme') || 'default';
+            applyTheme(savedTheme);
+        }
+        
+        // Theme panel event listeners
+        themeToggle.addEventListener('click', openThemePanel);
+        themePanelClose.addEventListener('click', closeThemePanel);
+        themePanelOverlay.addEventListener('click', closeThemePanel);
+        
+        // Theme option event listeners
+        themeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const themeName = this.dataset.theme;
+                applyTheme(themeName);
+                closeThemePanel();
+            });
+        });
+        
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', loadSavedTheme);
+    </script>
+</body>
+</html> 
