@@ -1,21 +1,24 @@
 # Python MCP Client
 
-Python MCP (Message Communication Protocol) Client is a framework for creating and interacting with tools using standardized messaging protocols. This project demonstrates how to create and use MCP servers and clients in Python.
+Python MCP (Model Context Protocol) Client is a framework for creating and interacting with LLM-powered tools using standardized messaging protocols. This project demonstrates how to create MCP servers and clients in Python that can be used with LangChain and LangGraph.
 
 ![MCP Client Interface](./static/Screenshot%20from%202025-04-13%2006-50-45.png)
 
 ## Features
 
-- **MCP Server Implementation**: Create servers with tools that can be accessed through the MCP protocol
+- **MCP Server Implementation**: Create servers with tools that can be accessed through the Model Context Protocol
 - **Flask-based Web Interface**: Interact with MCP servers through a user-friendly web interface
+- **LangChain & LangGraph Integration**: Utilize LangChain and LangGraph for LLM-powered agents
 - **MySQL Integration**: Execute MySQL commands via MCP tools
+- **Multi-Server Support**: Connect to multiple MCP servers simultaneously
 - **Dynamic Server Management**: Add or configure servers at runtime
 
-## Components
+## Architecture
 
-1. **Flask App**: Web interface for interacting with MCP servers and tools
-2. **MySQL MCP Server**: Provides tools for MySQL database operations
-3. **Client Interface**: Simple user interface to send commands to MCP servers
+1. **Flask Web Application**: Serves as the frontend interface and API gateway
+2. **MultiServerMCPClient**: Connects to multiple MCP servers (MySQL, File operations)
+3. **LangChain React Agent**: Processes user queries and decides which tools to use
+4. **MCP Servers**: Independent processes that expose tools through the Model Context Protocol
 
 ## Getting Started
 
@@ -25,6 +28,7 @@ Python MCP (Message Communication Protocol) Client is a framework for creating a
 - Flask
 - LangChain
 - LangGraph
+- OpenAI API key (for GPT-4o model)
 - MCP libraries
 
 ### Installation
@@ -58,25 +62,55 @@ Python MCP (Message Communication Protocol) Client is a framework for creating a
    python flask_app.py
    ```
 
-2. Open your browser and navigate to `http://localhost:5000`
+2. Open your browser and navigate to `http://localhost:5008`
 
 ## Usage
 
-### Interacting with MySQL Server
+### Interacting with the MCP Client
 
-You can send SQL queries through the MCP client interface. Examples:
+The web interface allows you to:
+
+1. Send natural language queries to the LLM agent
+2. View available tools across all connected MCP servers
+3. Add new MCP servers dynamically
+
+### Example Queries
 
 - "Query the users table in MySQL"
 - "Create a new database called test_db"
 - "List all tables in the current database"
 
-## Project Structure
+## API Endpoints
 
-- `flask_app.py`: Main Flask application
-- `mysql_mcp_server.py`: MySQL MCP server implementation
-- `file_mcp_server.py`: File operations MCP server
-- `static/`: Static files for the web interface
-- `templates/`: HTML templates for the web interface
+- `GET /api/tools`: Returns a list of all available tools from all servers
+- `GET /api/servers`: Returns a list of configured MCP servers
+- `POST /api/add_server`: Adds a new MCP server configuration
+- `POST /api/process_query`: Processes a user query using the LLM agent
+
+## Sample MCP Servers
+
+### MySQL MCP Server (mysql_mcp_server.py)
+A server that provides tools for MySQL database operations:
+- Query execution
+- Table creation, insertion, selection, updating, and deletion
+- Database creation and management
+- Database listing
+
+### File MCP Server (file_mcp_server.py)
+A server that provides tools for file system operations:
+- Reading files
+- Writing to files
+- Creating new files
+- Listing files in the current directory
+
+## How It Works
+
+1. The Flask app initializes connections to MCP servers
+2. User queries are received through the web interface
+3. The LangChain React Agent processes the query using GPT-4o
+4. The agent selects appropriate tools from the available MCP servers
+5. Tool calls are executed on the respective servers
+6. Results are returned to the user through the web interface
 
 ## License
 
