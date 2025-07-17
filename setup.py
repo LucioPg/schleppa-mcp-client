@@ -8,7 +8,7 @@ long_description = (this_directory / "Pypi-README.md").read_text()
 
 
 setup(
-    name="python-mcp-client",
+    name="schleppa-mcp-client",
     version="0.1.3",
     packages=find_packages(),
     long_description=long_description,
@@ -20,6 +20,7 @@ setup(
         "langchain-mcp-adapters>=0.0.1",
         "langgraph>=0.0.1",
         "flask>=2.0.0",
+        "langchain-community>=0.3.27"
     ],
 )
 

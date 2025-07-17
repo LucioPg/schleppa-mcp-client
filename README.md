@@ -2,8 +2,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![LangChain](https://img.shields.io/badge/LangChain-Enabled-green.svg)](https://github.com/hwchase17/langchain)
-[![LLM Tools](https://img.shields.io/badge/LLM-Tools-orange.svg)](https://github.com/kernelmax/python-mcp-client)
-[![Open Source](https://img.shields.io/badge/Open-Source-brightgreen.svg)](https://github.com/kernelmax/python-mcp-client)
+[![LLM Tools](https://img.shields.io/badge/LLM-Tools-orange.svg)](https://github.com/LucioPg/schleppa-mcp-client)
+[![Open Source](https://img.shields.io/badge/Open-Source-brightgreen.svg)](https://github.com/LucioPg/schleppa-mcp-client)
 
 A web-based Python platform for connecting to multiple MCP servers, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
 
@@ -32,18 +32,18 @@ A web-based Python platform for connecting to multiple MCP servers, enabling nat
 The simplest way to install Python MCP Client is via pip:
 
 ```bash
-pip install python-mcp-client
+pip install schleppa-mcp-client
 ```
 
-You can find the package on PyPI at: [https://pypi.org/project/python-mcp-client/](https://pypi.org/project/python-mcp-client/)
+You can find the package on PyPI at: [https://pypi.org/project/schleppa-mcp-client/](https://pypi.org/project/schleppa-mcp-client/)
 
 #### Option 2: Install from Source
 If you want the latest development version or plan to contribute:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kernelmax/python-mcp-client.git
-   cd python-mcp-client
+   git clone https://github.com/LucioPg/schleppa-mcp-client.git
+   cd schleppa-mcp-client
    ```
 
 2. Set up a virtual environment:
@@ -77,12 +77,12 @@ You can also run Python MCP Client using Docker:
 
 1. Pull the pre-built image from Docker Hub:
    ```bash
-   docker pull kernelmax/python-mcp-client
+   docker pull LucioPg/schleppa-mcp-client
    ```
 
 2. Run the container:
    ```bash
-   docker run -p 5008:5008 -e OPENAI_API_KEY=your-api-key-here kernelmax/python-mcp-client
+   docker run -p 5008:5008 -e OPENAI_API_KEY=your-api-key-here LucioPg/schleppa-mcp-client
    ```
 
 3. Open your browser and navigate to `http://localhost:5008`
@@ -96,7 +96,7 @@ For a more convenient setup, you can use Docker Compose:
    version: '3'
    services:
      mcp-app:
-       image: kernelmax/python-mcp-client
+       image: LucioPg/schleppa-mcp-client
        # or build from source:
        # build: .
        ports:
@@ -225,8 +225,8 @@ Need help? Join our [community chat](https://discord.gg/example) or ask question
 1. **Fork the repository**
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/YOUR-USERNAME/python-mcp-client.git
-   cd python-mcp-client
+   git clone https://github.com/LucioPg/schleppa-mcp-client.git
+   cd schleppa-mcp-client
    ```
 3. **Create a feature branch**:
    ```bash

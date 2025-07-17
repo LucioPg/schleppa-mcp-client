@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set these variables before running
-DOCKER_USERNAME="kernelmax"
-IMAGE_NAME="python-mcp-client"
+DOCKER_USERNAME="LucioPg"
+IMAGE_NAME="schleppa-mcp-client"
 TAG="latest"
 
 # Full image name
