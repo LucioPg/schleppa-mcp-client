@@ -315,3 +315,40 @@ We believe in the power of open source to drive innovation and make AI tools acc
 ## 📬 Contact & Support
 
 For questions, feature requests, or support, please open an issue on GitHub or contact the maintainers directly. 
+
+
+# New Features
+#### file: .guidelines.md
+This document describes all the new features
+that should be implemented, divided by stages.
+
+
+### Stage 1
+- [x] The browser interface ( aka frontend) must be converted in reactjs
+- [x] All the necessary tools for the frontend must be added
+- [ ] Both the backend and the frontend MUST be easily debuggable
+- [x] The frontend must be separated from the backend logic
+- [ ] The backend must work async and provide rest api endpoints
+
+### Stage 2
+- [ ] The llm answer must be streamed
+- [ ] The Thinking part of the llm answer MUST be enclosed in a box, clearly separated from the actual answer
+- [ ] The Human message must have three buttons just below the submitted prompt:
+  - Copy: copy the message in the system clipboard
+  - Edit: edit the Human message in a modal dialog window, with two buttons Abort and Ok, if the user clicks outside the dialog, the dialog must be closed with abort. When the dialog accepts the edit all the message history after that message MUST be deleted, in this way the message history can continue with the edited Human message and the next llm answer
+  - Delete: delete the Human message, the history should be truncated
+- [ ] The conversations must be stored in a database, with a unique id, datetime, llm model in use and maybe something else
+- [ ] The conversations must be listed in an accordion or similar on one of the side the chat window
+- [ ] The User should have the opportunity to select a previous conversation and continue
+- [ ] The User Must have the opportunity to attach images and documents to the chat
+- [ ] The Interface must provide a dialog box that allows the user to edit the model parameters such as:
+  - temperature
+  - top_p
+  - system prompt
+  - attachment process mode (if the attached file should be converted in base64 or attached to the prompt just by using the path)
+  - context length strategy (sliding window, summarize the oldest, truncate the oldest, summarize the middle)
+- [ ] The context strategies must be implemented
+- [ ] The Interface must show what the context fullness percentage is (counting the overall tokens) 
+- [ ] The model parameters must be validated through a pydantic model
+- [ ] The Interface must provide a dialog box that allows the user to select which model to run
+- [ ] The llm answer must provide the args used to call the tool and the related tool response
