@@ -14,7 +14,7 @@ This is the React frontend for the Python MCP Client application. It's built wit
 
 - Node.js 14.18+ or 16+
 - npm or yarn
-- Python Flask backend running on port 5000
+- Python Flask backend running on port 5008
 
 ## Installation
 
@@ -36,9 +36,9 @@ To start the development server:
 npm run dev
 ```
 
-This will start the Vite development server on port 3000 with hot module replacement (HMR) enabled.
+This will start the Vite development server on port 5173 with hot module replacement (HMR) enabled.
 
-The development server is configured to proxy API requests to the Flask backend running on port 5000.
+The development server is configured to proxy API requests to the Flask backend running on port 5008.
 
 ## Building for Production
 
@@ -83,6 +83,6 @@ The frontend communicates with the Flask backend through the API service defined
 
 ## Notes
 
-- Make sure the Flask backend is running on port 5000 before starting the frontend
+- Make sure the Flask backend is running on port 5008 before starting the frontend
 - The frontend is configured to work with the API endpoints provided by the backend
 - For production deployment, you may need to adjust the API base URL in the api.js file

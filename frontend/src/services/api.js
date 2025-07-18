@@ -1,12 +1,61 @@
 import axios from 'axios';
+let envs = null
+let FLASK_URL = null
+let api = null;
+
+const initEnvs = async () => {
+  if(!envs){
+    envs = await window.electron.getEnv().then(envs => {return envs});
+    FLASK_URL = `http://${envs.FLASK_HOST}:${envs.FLASK_PORT}/api`;
+    console.log('ENVS HAVE BEEN LOADED: ',envs);
+
+  }
+  return envs
+};
+
+// Inizializza l'istanza axios in modo asincrono
+const initializeApi = async () => {
+  if (!api) {
+    const baseURL = await getBaseUrl();
+    api = axios.create({
+      baseURL: baseURL,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+  return api;
+};
+
+
+/**
+ * Determine the base URL for API requests
+ * In Electron (desktop mode), we need to use the full URL with the port
+ * In web mode, we can use the relative URL
+ */
+const getBaseUrl = async () => {
+  // Check if we're running in Electron
+  const isElectron = window.electron !== undefined;
+  
+  if (isElectron) {
+    // In Electron, use the full URL with the port
+    // The Flask backend runs on port 5008 by default
+    await initEnvs();
+    return `${FLASK_URL}`;
+  } else {
+    // In web mode, use the relative URL
+    return '/api';
+  }
+};
 
 // Create an axios instance with default config
-const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+// rimpiazzata con una funzione async
+// const api = axios.create({
+//   baseURL: getBaseUrl(),
+//   headers: {
+//     'Content-Type': 'application/json'
+//   }
+// });
 
 /**
  * Fetch all available servers
@@ -14,6 +63,7 @@ const api = axios.create({
  */
 export const fetchServers = async () => {
   try {
+    const api = await initializeApi();
     const response = await api.get('/servers');
     
     // Transform the server data from object to array format
@@ -39,6 +89,7 @@ export const fetchServers = async () => {
  */
 export const fetchTools = async () => {
   try {
+    const api = await initializeApi();
     const response = await api.get('/tools');
     return response.data;
   } catch (error) {
@@ -54,6 +105,7 @@ export const fetchTools = async () => {
  */
 export const processQuery = async (query) => {
   try {
+    const api = await initializeApi();
     const response = await api.post('/process_query', { query });
     return response.data;
   } catch (error) {
@@ -70,6 +122,7 @@ export const processQuery = async (query) => {
  */
 export const addServer = async (name, config) => {
   try {
+    const api = await initializeApi();
     const response = await api.post('/add_server', { 
       name,
       config
@@ -81,4 +134,5 @@ export const addServer = async (name, config) => {
   }
 };
 
-export default api;
+// Funzione helper per ottenere l'istanza API
+export const getApiInstance = () => initializeApi();

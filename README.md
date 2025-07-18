@@ -5,25 +5,28 @@
 [![LLM Tools](https://img.shields.io/badge/LLM-Tools-orange.svg)](https://github.com/LucioPg/schleppa-mcp-client)
 [![Open Source](https://img.shields.io/badge/Open-Source-brightgreen.svg)](https://github.com/LucioPg/schleppa-mcp-client)
 
-A web-based Python platform for connecting to multiple MCP servers for Ollama models, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
+A desktop application for connecting to multiple MCP servers for Ollama models, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
 
 ![MCP Client Interface - LLM-powered tool orchestration dashboard](./static/Screenshot%20from%202025-04-13%2006-50-45.png)
 
 ## 🚀 Key Features
 - **Ollama Models**: Officially supported
 - **MCP Tool Orchestration**: Build and connect powerful LLM tools using standardized messaging protocols
-- **Modern Web Interface**: React frontend with Vite for fast development and Flask backend for robust API support
+- **Desktop Application**: Electron-based desktop app for local operation with React frontend and Flask backend
 - **LangChain & LangGraph Integration**: Create sophisticated AI workflows with industry-standard frameworks
 - **Multi-Server Support**: Connect to multiple tool servers simultaneously from a single interface
 - **Dynamic Server Management**: Add, configure, and update tool servers at runtime without restarts
+- **Local Operation**: Works entirely locally for improved security and privacy
+- **Easy Debugging**: Built-in tools for debugging both frontend and backend
 
 ## 🏗️ Architecture Overview
 
-1. **Flask Web Application**: Modern web interface serving as the command center for your AI tools
+1. **Electron Desktop Application**: Cross-platform desktop application framework for local operation
 2. **React Frontend with Vite**: Fast, modern React components built with Vite for improved performance and development experience
-3. **MultiServerMCPClient**: Advanced client that orchestrates connections to multiple tool servers
-4. **LangChain React Agent**: Intelligent decision-making system that chooses the right tools for each task
-5. **MCP Servers**: Specialized microservices that expose domain-specific tools through a standardized protocol
+3. **Flask Backend**: Robust Python backend providing REST API endpoints for the frontend
+4. **MultiServerMCPClient**: Advanced client that orchestrates connections to multiple tool servers
+5. **LangChain React Agent**: Intelligent decision-making system that chooses the right tools for each task
+6. **MCP Servers**: Specialized microservices that expose domain-specific tools through a standardized protocol
 
 ## 🔧 Getting Started with Python MCP
 
@@ -65,6 +68,46 @@ If you want the latest development version or plan to contribute:
 
 ### Running Your AI Tool Platform
 
+#### Option 1: Run as Desktop Application (Recommended)
+
+##### Windows Users (Easiest Method)
+
+1. Simply double-click the `start-app.bat` file in the project root directory.
+   - This batch file will automatically check for Node.js, install dependencies if needed, and start the application.
+   - The first run may take a few minutes as it installs dependencies.
+   - The application will launch as an Electron desktop app, not just in a browser window.
+   - If you encounter any issues, you can try running the `test-electron.bat` file which directly tests the Electron launch process.
+
+##### Manual Setup (All Platforms)
+
+1. Install frontend dependencies (first time only):
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. Run the Electron desktop application in development mode:
+   - On Windows:
+     ```powershell
+     cd frontend
+     npm run start
+     ```
+   - On macOS/Linux:
+     ```bash
+     cd frontend
+     npm run electron:dev
+     ```
+   This will start both the Vite development server and the Electron app, with the Flask backend running as a child process.
+
+3. For production builds:
+   ```bash
+   cd frontend
+   npm run electron:build
+   ```
+   This will create a distributable package in the `frontend/release` directory.
+
+#### Option 2: Run as Web Application (Legacy)
+
 1. Start the Flask backend:
    ```bash
    python flask_app.py
@@ -78,8 +121,43 @@ If you want the latest development version or plan to contribute:
    ```
 
 3. Open your browser and navigate to:
-   - Frontend: `http://localhost:3000` (Vite development server)
+   - Frontend: `http://localhost:5173` (Vite development server)
    - Backend API: `http://localhost:5008` (Flask server)
+
+### Debugging Your Application
+
+The project includes VS Code debugging configurations for both the frontend and backend:
+
+1. **Frontend Debugging**:
+   - Use the "Debug Electron Main Process" configuration to debug the Electron main process
+   - Use the "Debug Electron Renderer Process" configuration to debug the React frontend
+
+2. **Backend Debugging**:
+   - Use the "Debug Flask Backend" configuration to debug the Flask backend
+
+3. **Combined Debugging**:
+   - Use the "Debug Electron + Flask (Compound)" configuration to debug both the frontend and backend simultaneously
+
+These configurations are available in the VS Code debug panel and provide full debugging capabilities including breakpoints, variable inspection, and step-through debugging.
+
+### Troubleshooting
+
+If you encounter issues with the Electron desktop application:
+
+1. **Application opens in browser instead of as desktop app**:
+   - Make sure you're using the `start-app.bat` file or running `npm run electron:dev:win` from the frontend directory
+   - Try running the `test-electron.bat` file which directly tests the Electron launch process
+   - Check that all dependencies are installed correctly with `npm install` in the frontend directory
+
+2. **Backend connection issues**:
+   - Verify that the Flask backend is running (you should see console output indicating it started)
+   - Check that the backend is running on port 5008 as expected
+   - Look for any error messages in the Electron console (View > Toggle Developer Tools)
+
+3. **Dependency issues**:
+   - Run `npm audit` in the frontend directory to check for any package vulnerabilities
+   - Try deleting the `node_modules` folder and running `npm install` again
+   - Make sure you have the latest version of Node.js installed
 
 #### Option 3: Run with Docker
 
@@ -324,11 +402,13 @@ that should be implemented, divided by stages.
 
 
 ### Stage 1
-- [x] The browser interface ( aka frontend) must be converted in reactjs
+- [x] **deprecated** The browser interface ( aka frontend) must be converted in reactjs
+- [x] The frontend must be converted into an Electron App for local operation
 - [x] All the necessary tools for the frontend must be added
-- [ ] Both the backend and the frontend MUST be easily debuggable
+- [x] The frontend MUST be easily debuggable
+- [x] The backend MUST be easily debuggable
 - [x] The frontend must be separated from the backend logic
-- [ ] The backend must work async and provide rest api endpoints
+- [x] The backend must work async and provide rest api endpoints
 
 ### Stage 2
 - [ ] The llm answer must be streamed

@@ -1,16 +1,50 @@
 {
-  "name": "mcp-client-frontend",
+  "name": "mcp-client-desktop",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
+  "description": "MCP Client Desktop Application",
+  "author": "Schleppa Team",
+  "main": "_electron.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "vite --config vite.config.electron.js",
+    "build": "vite build --config vite.config.electron.js",
+    "electron:dev": "cross-env NODE_ENV=development electron .",
+    "electron:prod": "cross-env NODE_ENV=production electron .",
+    "electron:build": "npm run build && electron-builder",
+    "start": "npm run electron:dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.schleppa.mcp-client",
+    "productName": "SCHLEPPA MCP Client",
+    "files": [
+      "dist/**/*",
+      "_electron.js",
+      "preload.js"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "../flask_app.py",
+        "to": "flask_app.py"
+      },
+      {
+        "from": "../file_mcp_server.py",
+        "to": "file_mcp_server.py"
+      },
+      {
+        "from": "../mysql_mcp_server.py",
+        "to": "mysql_mcp_server.py"
+      }
+    ]
   },
   "dependencies": {
     "axios": "^1.6.2",
     "bootstrap": "^5.3.2",
+    "dotenv": "^17.2.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
@@ -19,6 +53,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12",
+    "electron-is-dev": "^3.0.1",
+    "strip-ansi": "^7.1.0",
     "vite": "^7.0.5"
   }
 }
