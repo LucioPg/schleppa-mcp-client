@@ -5,3 +5,28 @@ __pycache__
 dist
 build
 .idea
+.junie
+uv.lock
+package-lock.json
+# Node.js
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Vite
+.DS_Store
+*.local
+.vite
+
+# Testing
+coverage
+.nyc_output
+
+# Editor directories and files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

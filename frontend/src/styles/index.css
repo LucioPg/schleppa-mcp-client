@@ -1,0 +1,63 @@
+:root {
+  --bg-dark: #02343F;
+  --bg-sidebar: #02343F;
+  --bg-card: #50586C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #F0EDCC;
+  --primary-color: #2BAE66;
+  --primary-dark: #249555;
+  --primary-light: #3FCA7D;
+  --secondary-color: #F0EDCC;
+  --accent-color: #2BAE66;
+  --color-accent: #2BAE66;
+  --color-accent-muted: rgba(43, 174, 102, 0.15);
+  --tool-color: #50586C;
+  --danger-color: #F76C6C;
+  --border-color: rgba(240, 237, 204, 0.2);
+  --input-bg: #50586C;
+  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  --gradient-bg: linear-gradient(135deg, #02343F 0%, #033F4C 100%);
+  --card-gradient: linear-gradient(to right, #50586C, #434A5C);
+  --header-gradient: linear-gradient(to right, #02343F, #033F4C);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+/* App Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
