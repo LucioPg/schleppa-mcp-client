@@ -29,7 +29,7 @@ def make_file(path: str) -> str:
 @mcp.tool()
 def list_files() -> str:
     """List files in the current directory"""
-    return os.listdir(os.getcwd())
+    return "\n".join(os.listdir(os.getcwd()))
 
 if __name__ == "__main__":
     print("Starting file mcp server")
