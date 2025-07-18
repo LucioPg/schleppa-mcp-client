@@ -5,14 +5,14 @@
 [![LLM Tools](https://img.shields.io/badge/LLM-Tools-orange.svg)](https://github.com/LucioPg/schleppa-mcp-client)
 [![Open Source](https://img.shields.io/badge/Open-Source-brightgreen.svg)](https://github.com/LucioPg/schleppa-mcp-client)
 
-A web-based Python platform for connecting to multiple MCP servers, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
+A web-based Python platform for connecting to multiple MCP servers for Ollama models, enabling natural language interactions with databases, file systems, and web services. Connect with pre-built or custom MCP implementations in a unified interface. Future integrations include Google Workspace, Microsoft 365, Slack, Salesforce, and GitHub. Free to use under the MIT license.
 
 ![MCP Client Interface - LLM-powered tool orchestration dashboard](./static/Screenshot%20from%202025-04-13%2006-50-45.png)
 
 ## 🚀 Key Features
-
+- **Ollama Models**: Officially supported
 - **MCP Tool Orchestration**: Build and connect powerful LLM tools using standardized messaging protocols
-- **Flask Web Interface**: Interact with AI agents through an intuitive, user-friendly dashboard
+- **Modern Web Interface**: React frontend with Vite for fast development and Flask backend for robust API support
 - **LangChain & LangGraph Integration**: Create sophisticated AI workflows with industry-standard frameworks
 - **Multi-Server Support**: Connect to multiple tool servers simultaneously from a single interface
 - **Dynamic Server Management**: Add, configure, and update tool servers at runtime without restarts
@@ -20,9 +20,10 @@ A web-based Python platform for connecting to multiple MCP servers, enabling nat
 ## 🏗️ Architecture Overview
 
 1. **Flask Web Application**: Modern web interface serving as the command center for your AI tools
-2. **MultiServerMCPClient**: Advanced client that orchestrates connections to multiple tool servers
-3. **LangChain React Agent**: Intelligent decision-making system that chooses the right tools for each task
-4. **MCP Servers**: Specialized microservices that expose domain-specific tools through a standardized protocol
+2. **React Frontend with Vite**: Fast, modern React components built with Vite for improved performance and development experience
+3. **MultiServerMCPClient**: Advanced client that orchestrates connections to multiple tool servers
+4. **LangChain React Agent**: Intelligent decision-making system that chooses the right tools for each task
+5. **MCP Servers**: Specialized microservices that expose domain-specific tools through a standardized protocol
 
 ## 🔧 Getting Started with Python MCP
 
@@ -64,12 +65,21 @@ If you want the latest development version or plan to contribute:
 
 ### Running Your AI Tool Platform
 
-1. Start the Flask application:
+1. Start the Flask backend:
    ```bash
    python flask_app.py
    ```
 
-2. Open your browser and navigate to `http://localhost:5008`
+2. Start the React frontend (in a separate terminal):
+   ```bash
+   cd frontend
+   npm install  # Only needed the first time
+   npm run dev
+   ```
+
+3. Open your browser and navigate to:
+   - Frontend: `http://localhost:3000` (Vite development server)
+   - Backend API: `http://localhost:5008` (Flask server)
 
 #### Option 3: Run with Docker
 
