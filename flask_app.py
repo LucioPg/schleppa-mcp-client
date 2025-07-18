@@ -7,12 +7,18 @@ from langchain_mcp_adapters.tools import load_mcp_tools
 from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain_ollama.chat_models import ChatOllama
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
 
 # Get the absolute path to server scripts
 current_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama")  # "openai" or "ollama"
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen14_max")  # Default Ollama model
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "fadsf11123fadf3vfa!!£fasdf4")
 
 servers = {
     "mysql": {
@@ -27,8 +33,20 @@ servers = {
     }
 }
 
-# Set a default API key or use environment variable
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "your-api-key-here")
+
+def get_llm_model():
+    """Get the appropriate LLM model based on configuration"""
+    if MODEL_PROVIDER.lower() == "ollama":
+        return ChatOllama(
+            model=OLLAMA_MODEL,
+            base_url="http://localhost:11434",  # Default Ollama URL
+            temperature=0.7,
+            top_p=0.9
+        )
+    else:
+        os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+        return ChatOpenAI(model="gpt-4o")
+
 
 # Function to run async code
 def run_async(coroutine):
@@ -69,42 +87,44 @@ async def get_available_tools():
         traceback.print_exc()
         return []
 
+
 async def process_query(query):
     """Process user query using multiple MCP servers"""
     try:
         print(f"Processing query: {query}")
-        model = ChatOpenAI(model="gpt-4o")
-        
+        model = get_llm_model()
+        print(f"Using model: {model.__class__.__name__}")
+
         async with MultiServerMCPClient(servers) as client:
             # Get tools from all servers
             print("Getting tools from all servers")
             tools = client.get_tools()
             print(f"Retrieved {len(tools)} tools")
-            
+
             # Create and run the agent
             print("Creating agent")
             agent = create_react_agent(model, tools)
-            
+
             # Convert string query to proper format
             print("Preparing messages")
             messages = [{"role": "user", "content": query}]
-            
+
             print("Invoking agent")
             agent_response = await agent.ainvoke({"messages": messages})
             print("Agent response received")
-            
+
             # Track tool usage
             tool_usage = []
             final_answer = None
-            
+
             if "messages" in agent_response:
                 messages = agent_response["messages"]
                 print(f"Response contains {len(messages)} messages")
-                
+
                 for i, msg in enumerate(messages):
                     msg_type = msg.__class__.__name__
                     print(f"Message {i}: {msg_type}")
-                    
+
                     # Get tool calls
                     if msg_type == "AIMessage" and hasattr(msg, 'tool_calls') and msg.tool_calls:
                         print(f"Found tool calls in message {i}: {len(msg.tool_calls)}")
@@ -116,14 +136,14 @@ async def process_query(query):
                             }
                             tool_usage.append(tool_data)
                             print(f"Added tool usage: {tool_data}")
-                    
+
                     # Get tool responses
                     if msg_type == "ToolMessage" and hasattr(msg, 'content'):
                         # Add the tool response to the most recent tool call
                         if tool_usage and 'result' not in tool_usage[-1]:
                             tool_usage[-1]['result'] = msg.content
                             print(f"Added result to tool")
-                    
+
                     # Get the final AI answer
                     if i == len(messages) - 1 and msg_type == "AIMessage":
                         final_answer = msg.content
@@ -131,7 +151,7 @@ async def process_query(query):
             else:
                 print("No messages in response")
                 print(f"Response keys: {agent_response.keys()}")
-            
+
             return {
                 "final_answer": final_answer if final_answer else "No answer was generated.",
                 "tool_usage": tool_usage
@@ -144,6 +164,7 @@ async def process_query(query):
             "final_answer": f"Error processing your request: {str(e)}",
             "tool_usage": []
         }
+
 
 @app.route('/api/tools', methods=['GET'])
 def get_tools():
