@@ -32,6 +32,10 @@
         "to": "flask_app.py"
       },
       {
+        "from": "../heartbeat.py",
+        "to": "heartbeat.py"
+      },
+      {
         "from": "../file_mcp_server.py",
         "to": "file_mcp_server.py"
       },

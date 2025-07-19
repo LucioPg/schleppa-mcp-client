@@ -13,4 +13,5 @@ dependencies = [
     "mcp>=0.0.1",
     "python-dotenv>=1.0.0",
     "langchain-ollama>=0.3.5",
+    "psutil>=7.0.0",
 ]

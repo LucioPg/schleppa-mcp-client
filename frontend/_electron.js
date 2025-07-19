@@ -20,6 +20,77 @@ let mainWindow;
 let backendProcess;
 let viteProcess;
 let backendProcesses = [];
+let heartbeatPid = null;
+
+/*
+ * Ottiene il PID del processo heartbeat dal backend
+ */
+async function getHeartbeatPid() {
+    const axios = require('axios');
+
+    try {
+        const response = await axios.get(`http://${FLASK_HOST}:${FLASK_PORT}/api/heartbeat_pid`);
+        heartbeatPid = response.data.heartbeat_pid;
+        console.log('Heartbeat PID ottenuto:', heartbeatPid);
+        return heartbeatPid;
+    } catch (error) {
+        console.error('Errore nell\'ottenere il PID heartbeat:', error.message);
+        return null;
+    }
+}
+
+/**
+ * Ferma il processo heartbeat tramite PID
+ */
+function stopHeartbeatByPid(pid) {
+    if (!pid) return;
+
+    console.log(`Stopping heartbeat process with PID: ${pid}`);
+
+    try {
+        if (process.platform === 'win32') {
+            // Su Windows
+            spawn('taskkill', ['/pid', pid.toString(), '/f', '/t'], {stdio: 'ignore'});
+        } else {
+            // Su Unix/Linux/macOS
+            process.kill(pid, 'SIGTERM');
+        }
+
+        console.log('Heartbeat process terminated');
+    } catch (error) {
+        console.error('Error stopping heartbeat process:', error);
+    }
+}
+
+/**
+ * Ferma il backend in modo elegante tramite heartbeat
+ */
+async function stopBackendGracefully() {
+    console.log('Initiating graceful backend shutdown...');
+
+    // Prima ottieni il PID del heartbeat se non lo abbiamo già
+    if (!heartbeatPid) {
+        console.log('Getting heartbeat PID from backend...');
+        await getHeartbeatPid();
+
+        // Aspetta un po' per assicurarsi che il backend sia pronto
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // Ferma il heartbeat, causando la chiusura automatica del backend
+    if (heartbeatPid) {
+        stopHeartbeatByPid(heartbeatPid);
+        console.log('Heartbeat stopped, backend should shutdown automatically');
+
+        // Aspetta un po' per permettere al backend di fare cleanup
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    } else {
+        console.log('No heartbeat PID available, falling back to direct termination');
+        // Fallback al metodo originale
+        stopBackend();
+    }
+}
+
 
 /**
  * Avvia il server Vite in modalità development
@@ -217,6 +288,11 @@ function startBackend() {
             // Notifica al frontend che il backend è pronto
             if (mainWindow && data.toString().includes('Running on')) {
                 mainWindow.webContents.send('backend-status', {status: 'ready'});
+                // Ottieni il PID del heartbeat dopo un breve delay
+                setTimeout(async () => {
+                    await getHeartbeatPid();
+                }, 2000);
+
             }
         });
 
@@ -312,24 +388,60 @@ app.whenReady().then(async () => {
 });
 
 // Chiudi l'app quando tutte le finestre sono chiuse
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
     // Su macOS, lascia l'app attiva anche senza finestre
     if (process.platform !== 'darwin') {
-        stopBackend();
-        stopViteServer();
-        app.quit();
+        console.log('All windows closed, initiating graceful shutdown...');
+
+        try {
+            await stopBackendGracefully();
+            stopViteServer();
+            app.quit();
+        } catch (error) {
+            console.error('Error during graceful shutdown:', error);
+            console.log('Graceful shutdown failed, proceeding with normal shutdown...');
+            // Fallback alla chiusura normale
+            stopBackend();
+            stopViteServer();
+            app.quit();
+        }
+
     }
 });
 
 // Gestisce la chiusura dell'app
-app.on('before-quit', () => {
-    stopBackend();
-    stopViteServer();
+app.on('before-quit', async (event) => {
+    if (event){
+        // Previeni la chiusura immediata
+        event.preventDefault();
+    }
+
+    try {
+        await stopBackendGracefully();
+        stopViteServer();
+
+        // Ora chiudi veramente l'app
+        app.exit(0);
+    } catch (error) {
+        console.error('Error during graceful shutdown:', error);
+        // Fallback alla chiusura normale
+        stopBackend();
+        stopViteServer();
+        app.exit(1);
+    }
+
 });
 
 // Gestisce gli handler IPC
 ipcMain.handle('get-app-version', () => {
     return app.getVersion();
+});
+// Aggiungi un handler IPC per ottenere il heartbeat PID dal frontend se necessario
+ipcMain.handle('get-heartbeat-pid', async () => {
+    if (!heartbeatPid) {
+        await getHeartbeatPid();
+    }
+    return heartbeatPid;
 });
 
 // Passo le variabili ambientali al preload che non può usare il modulo path

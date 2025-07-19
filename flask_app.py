@@ -2,11 +2,18 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS  # Import CORS for cross-origin support
 import asyncio
 import os
-import json
+from pid_utils import (
+    write_pid_file,
+    cleanup_all as clean_at_exit,
+    start_heartbeat,
+    stop_heartbeat,
+    get_heartbeat_pid,
+    get_heartbeat_status,
+    register_heartbeat_process,
+    set_shutdown_callback
+)
 import logging
 import sys
-import signal
-import atexit
 from mcp import ClientSession, StdioServerParameters
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langgraph.prebuilt import create_react_agent
@@ -14,6 +21,10 @@ from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_ollama.chat_models import ChatOllama
 from dotenv import load_dotenv
+import signal
+import atexit
+
+
 
 # Set up logging
 logging.basicConfig(
@@ -32,6 +43,7 @@ load_dotenv()
 # Variabili globali per la gestione dei processi MCP
 mcp_processes = []
 shutdown_flag = False
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -70,9 +82,7 @@ def register_mcp_process(process):
 def cleanup_processes():
     """Termina tutti i processi MCP"""
     global mcp_processes, shutdown_flag
-    if shutdown_flag:
-        return
-        
+
     shutdown_flag = True
     logger.info("Cleaning up MCP processes...")
     
@@ -101,18 +111,9 @@ def cleanup_processes():
     mcp_processes.clear()
     logger.info("MCP processes cleanup completed")
 
-def signal_handler(sig, frame):
-    """Gestisce i segnali di terminazione"""
-    logger.info(f"Received signal {sig}, shutting down...")
-    cleanup_processes()
-    sys.exit(0)
-
-# Registra i signal handler e atexit
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
-if hasattr(signal, 'SIGBREAK'):  # Windows
-    signal.signal(signal.SIGBREAK, signal_handler)
-atexit.register(cleanup_processes)
+def cleanup_all():
+    """Cleanup all processes and files"""
+    clean_at_exit(FLASK_PORT, cleanup_processes)
 
 def get_llm_model():
     """Get the appropriate LLM model based on configuration"""
@@ -260,6 +261,41 @@ async def process_query(query):
         }
 
 
+# Endpoint per il heartbeat
+@app.route('/api/heartbeat_pid', methods=['GET'])
+def get_heartbeat_pid_route():
+    """Restituisce il PID del processo heartbeat"""
+    logger.info("API request: GET /api/heartbeat_pid")
+
+    try:
+        pid = get_heartbeat_pid()
+
+        if pid is not None:
+            logger.info(f"Restituendo PID heartbeat: {pid}")
+            return jsonify({"heartbeat_pid": pid})
+        else:
+            logger.error("Impossibile avviare o ottenere il processo heartbeat")
+            return jsonify({"error": "Heartbeat process not available"}), 500
+
+    except Exception as e:
+        logger.error(f"Errore in get_heartbeat_pid: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/heartbeat_status', methods=['GET'])
+def get_heartbeat_status_route():
+    """Verifica lo status del processo heartbeat"""
+    logger.info("API request: GET /api/heartbeat_status")
+
+    try:
+        status = get_heartbeat_status()
+        return jsonify(status)
+
+    except Exception as e:
+        logger.error(f"Errore in get_heartbeat_status: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/tools', methods=['GET'])
 def get_tools():
     """Return list of available tools from all servers"""
@@ -382,8 +418,50 @@ def calculate():
         logger.error(f"Error in calculate: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
 
+def shutdown_flask():
+    """Callback chiamata quando il heartbeat muore - chiude Flask"""
+    global shutdown_flag
+
+    if shutdown_flag:
+        return
+
+    logger.info("=== HEARTBEAT MORTO - AVVIO SHUTDOWN FLASK ===")
+    shutdown_flag = True
+
+    try:
+        # Cleanup di tutti i processi
+        cleanup_all()
+
+        logger.info("Cleanup completato, terminando Flask...")
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            logger.warning('Unable to shutdown Flask. Make sure you are running the app with the Werkzeug server (development).')
+            # Termina il processo Flask
+            sys.exit(0)
+        func()
+
+
+    except Exception as e:
+        logger.error(f"Errore durante shutdown Flask: {e}")
+        # Forza l'uscita comunque
+        os._exit(1)
+
+
+def signal_handler(sig, frame):
+    """Gestisce i segnali di terminazione"""
+    logger.info(f"Received signal {sig}, shutting down...")
+    cleanup_all()
+    sys.exit(0)
+# Registra i signal handler e atexit
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+if hasattr(signal, 'SIGBREAK'):  # Windows
+    signal.signal(signal.SIGBREAK, signal_handler)
+atexit.register(cleanup_all)
+
+if __name__ == '__main__':
+    write_pid_file(FLASK_PORT)
     
     # Log server startup
     logger.info("Starting MCP Client Backend Server")
@@ -391,7 +469,14 @@ if __name__ == '__main__':
     if MODEL_PROVIDER.lower() == "ollama":
         logger.info(f"Ollama Model: {OLLAMA_MODEL}")
     logger.info(f"Available servers: {list(servers.keys())}")
-    
+    # Imposta la callback per il shutdown quando il heartbeat muore
+    set_shutdown_callback(shutdown_flask)
+    heartbeat_pid = start_heartbeat()
+    if heartbeat_pid:
+        logger.info(f"Heartbeat process started with PID: {heartbeat_pid}")
+    else:
+        logger.warning("Failed to start heartbeat process")
+
     # Run the Flask app
     logger.info(f"Starting Flask server on port {FLASK_PORT}...")
     app.run(debug=True, host='0.0.0.0', port=FLASK_PORT)
